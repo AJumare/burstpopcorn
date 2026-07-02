@@ -1,0 +1,73 @@
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&display=swap');
+@import 'tailwindcss';
+@import 'tw-animate-css';
+@plugin "@tailwindcss/typography";
+
+@theme inline {
+  --font-sans: "DM Sans", sans-serif;
+  --font-serif: "Cormorant Garamond", serif;
+  
+  --color-brand-gold: #D59A3D;
+  --color-brand-light-gold: #E6C18C;
+  --color-brand-dark: #2B1F15;
+  --color-brand-mid: #5B3A1E;
+  --color-brand-cream: #FAF6EE;
+  --color-brand-off-gold: #C8922A;
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+}
+
+@layer base {
+  :root {
+    --background: #2B1F15;
+    --foreground: #FAF6EE;
+    --primary: #D59A3D;
+    --primary-foreground: #2B1F15;
+    --border: #5B3A1E;
+    --input: #5B3A1E;
+    --ring: #D59A3D;
+  }
+  
+  .dark {
+    --background: #2B1F15;
+    --foreground: #FAF6EE;
+    --primary: #D59A3D;
+    --primary-foreground: #2B1F15;
+    --border: #5B3A1E;
+    --input: #5B3A1E;
+    --ring: #D59A3D;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply font-sans antialiased bg-brand-dark text-brand-cream;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-serif;
+  }
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+/* Utilities */
+@layer utilities {
+  .text-brand-gold { color: #D59A3D; }
+  .text-brand-cream { color: #FAF6EE; }
+  .text-brand-dark { color: #2B1F15; }
+  .bg-brand-dark { background-color: #2B1F15; }
+  .bg-brand-gold { background-color: #D59A3D; }
+  .bg-brand-cream { background-color: #FAF6EE; }
+}
