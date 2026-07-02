@@ -10,7 +10,7 @@ export default function Marquee() {
   ];
 
   return (
-    <div className="w-full bg-brand-dark py-6 border-y border-brand-mid/30 overflow-hidden relative flex items-center">
+    <div className="w-full bg-brand-gold py-6 overflow-hidden relative flex items-center">
       <motion.div 
         className="flex whitespace-nowrap items-center"
         animate={{ x: ["0%", "-50%"] }}
@@ -23,10 +23,10 @@ export default function Marquee() {
         {/* Double the array for seamless looping */}
         {[...phrases, ...phrases, ...phrases, ...phrases].map((phrase, index) => (
           <React.Fragment key={index}>
-            <span className="font-sans text-brand-gold tracking-[0.2em] text-xs sm:text-sm md:text-base font-medium px-8">
+            <span className="font-sans text-brand-dark tracking-[0.2em] text-xs sm:text-sm md:text-base font-semibold px-8">
               {phrase.toUpperCase()}
             </span>
-            <span className="text-brand-gold/50">✦</span>
+            <span className="text-brand-dark/40">✦</span>
           </React.Fragment>
         ))}
       </motion.div>

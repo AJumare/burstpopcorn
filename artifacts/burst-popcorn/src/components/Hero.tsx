@@ -23,11 +23,11 @@ export default function Hero() {
       {/* Background Image & Overlays */}
       <div className="absolute inset-0 z-0">
         <img 
-          src="/gen/hero-bg.jpg" 
-          alt="Gourmet caramel popcorn" 
+          src="/gen/hero-bg_2.jpg" 
+          alt="Burst Popcorn Co. packaging" 
           className="w-full h-full object-cover"
         />
-        <div className="absolute inset-0 bg-gradient-to-r from-brand-dark/90 via-brand-dark/70 to-brand-dark/40" />
+        <div className="absolute inset-0 bg-gradient-to-r from-brand-dark/80 via-brand-dark/55 to-brand-dark/20" />
       </div>
 
       {/* Content */}
@@ -38,12 +38,11 @@ export default function Hero() {
           initial="hidden"
           animate="show"
         >
-          <motion.p 
-            variants={item}
-            className="font-sans tracking-widest text-brand-gold text-xs sm:text-sm font-semibold mb-6 uppercase"
-          >
-            Gourmet · Small Batch · Nigeria
-          </motion.p>
+          <motion.div variants={item} className="inline-flex items-center gap-3 mb-6">
+            <span className="font-sans tracking-widest text-brand-gold text-xs sm:text-sm font-semibold uppercase">
+              Gourmet · Small Batch · Nigeria
+            </span>
+          </motion.div>
           
           <motion.h1 
             variants={item}
@@ -58,10 +57,16 @@ export default function Hero() {
 
           <motion.p 
             variants={item}
-            className="font-sans tracking-widest text-brand-cream/70 text-sm sm:text-base uppercase"
+            className="font-sans tracking-widest text-brand-cream/80 text-sm sm:text-base uppercase mb-10"
           >
             Gourmet Popcorn. Remarkable Flavor.
           </motion.p>
+
+          <motion.div variants={item}>
+            <span className="inline-block border border-brand-gold/60 text-brand-gold font-sans tracking-[0.25em] text-xs px-5 py-2 uppercase">
+              Coming Soon
+            </span>
+          </motion.div>
         </motion.div>
       </div>
 

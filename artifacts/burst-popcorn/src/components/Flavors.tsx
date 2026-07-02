@@ -27,20 +27,25 @@ export default function Flavors() {
           >
             <div className="absolute inset-0 z-0">
               <img 
-                src="/gen/salted-caramel.jpg" 
+                src="/gen/salted-caramel_2.jpg" 
                 alt="Salted Caramel Popcorn" 
                 className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-brand-dark via-brand-dark/40 to-transparent opacity-90 transition-opacity duration-500 group-hover:opacity-70" />
+              <div className="absolute inset-0 bg-gradient-to-t from-brand-dark via-brand-dark/30 to-transparent opacity-75 transition-opacity duration-500 group-hover:opacity-55" />
             </div>
             
-            <div className="relative z-10 text-center transform transition-transform duration-500 translate-y-4 group-hover:translate-y-0">
-              <div className="inline-block bg-brand-gold text-brand-dark px-4 py-1.5 rounded-full font-sans tracking-widest text-xs font-bold mb-4">
-                SALTED CARAMEL
-              </div>
-              <p className="font-serif text-brand-cream/80 text-xl md:text-2xl italic opacity-0 transition-opacity duration-500 group-hover:opacity-100">
+            <div className="relative z-10 text-center">
+              <p className="font-serif text-brand-cream/70 text-lg italic mb-4 opacity-0 transition-opacity duration-500 group-hover:opacity-100">
                 Crafted in Small Batches · Rich Caramel Glaze
               </p>
+              <div className="inline-block bg-brand-gold text-brand-dark px-5 py-2 font-sans tracking-widest text-xs font-bold mb-3">
+                SALTED CARAMEL
+              </div>
+              <div className="block">
+                <span className="inline-block border border-brand-cream/40 text-brand-cream/70 font-sans tracking-widest text-[10px] px-3 py-1 uppercase">
+                  Coming Soon
+                </span>
+              </div>
             </div>
           </motion.div>
 
@@ -54,20 +59,25 @@ export default function Flavors() {
           >
             <div className="absolute inset-0 z-0">
               <img 
-                src="/gen/caramel-cheese.jpg" 
+                src="/gen/caramel-cheese_2.jpg" 
                 alt="Caramel and Cheese Mix Popcorn" 
                 className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-brand-dark via-brand-dark/40 to-transparent opacity-90 transition-opacity duration-500 group-hover:opacity-70" />
+              <div className="absolute inset-0 bg-gradient-to-t from-brand-dark via-brand-dark/30 to-transparent opacity-75 transition-opacity duration-500 group-hover:opacity-55" />
             </div>
             
-            <div className="relative z-10 text-center transform transition-transform duration-500 translate-y-4 group-hover:translate-y-0">
-              <div className="inline-block bg-brand-gold text-brand-dark px-4 py-1.5 rounded-full font-sans tracking-widest text-xs font-bold mb-4">
-                CARAMEL & CHEESE MIX
-              </div>
-              <p className="font-serif text-brand-cream/80 text-xl md:text-2xl italic opacity-0 transition-opacity duration-500 group-hover:opacity-100">
+            <div className="relative z-10 text-center">
+              <p className="font-serif text-brand-cream/70 text-lg italic mb-4 opacity-0 transition-opacity duration-500 group-hover:opacity-100">
                 Bold Flavor. Beautifully Crafted.
               </p>
+              <div className="inline-block bg-brand-mid text-brand-cream px-5 py-2 font-sans tracking-widest text-xs font-bold mb-3">
+                CARAMEL & CHEESE MIX
+              </div>
+              <div className="block">
+                <span className="inline-block border border-brand-cream/40 text-brand-cream/70 font-sans tracking-widest text-[10px] px-3 py-1 uppercase">
+                  Coming Soon
+                </span>
+              </div>
             </div>
           </motion.div>
         </div>

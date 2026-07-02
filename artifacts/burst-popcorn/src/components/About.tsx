@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 
 export default function About() {
   return (
-    <section id="our-story" className="w-full bg-brand-dark py-24 px-6 md:px-12">
+    <section id="our-story" className="w-full bg-brand-cream py-24 px-6 md:px-12">
       <div className="max-w-7xl mx-auto flex flex-col md:flex-row gap-12 lg:gap-24 items-center">
         
         {/* Image Column */}
@@ -15,11 +15,11 @@ export default function About() {
           className="w-full md:w-1/2 h-[600px] lg:h-[800px] rounded-t-full rounded-b-sm overflow-hidden relative"
         >
           <img 
-            src="/gen/story-bg.jpg" 
+            src="/gen/story-bg_2.jpg" 
             alt="Hands holding Burst popcorn bag" 
             className="w-full h-full object-cover"
           />
-          <div className="absolute inset-0 bg-brand-dark/10"></div>
+          <div className="absolute inset-0 bg-brand-dark/5"></div>
         </motion.div>
 
         {/* Text Column */}
@@ -30,10 +30,10 @@ export default function About() {
           transition={{ duration: 1, ease: "easeOut", delay: 0.2 }}
           className="w-full md:w-1/2 flex flex-col"
         >
-          <h2 className="font-serif text-5xl md:text-6xl text-brand-cream mb-6">Welcome to Burst</h2>
+          <h2 className="font-serif text-5xl md:text-6xl text-brand-dark mb-6">Welcome to Burst</h2>
           <div className="text-brand-gold text-2xl mb-10">✦</div>
           
-          <div className="font-serif text-brand-cream/90 text-xl md:text-2xl leading-relaxed space-y-6">
+          <div className="font-serif text-brand-dark/80 text-xl md:text-2xl leading-relaxed space-y-6">
             <p>Ever craved popcorn that actually felt worth the indulgence?</p>
             
             <p>Not the ordinary kind.<br/>
@@ -51,7 +51,7 @@ export default function About() {
               <span className="block text-brand-gold italic">Made to be shared.</span>
             </p>
             
-            <p className="pt-4">This is only the beginning.</p>
+            <p className="pt-4 text-brand-dark/70">This is only the beginning.</p>
           </div>
         </motion.div>
 
