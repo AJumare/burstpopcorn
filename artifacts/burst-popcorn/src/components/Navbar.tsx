@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { BurstLogo } from './BurstLogo';
 import { Menu, X } from 'lucide-react';
 
 export default function Navbar() {
@@ -41,12 +40,11 @@ export default function Navbar() {
           }}
           className="flex items-center gap-4 group"
         >
-          <div className="transition-transform duration-500 group-hover:rotate-12">
-            <BurstLogo size={isScrolled ? 40 : 48} />
-          </div>
-          <span className="font-sans font-semibold tracking-widest text-brand-gold text-sm md:text-base">
-            BURST POPCORN CO.
-          </span>
+          <img
+            src="/burst-logo.png"
+            alt="Burst Popcorn Co."
+            className={`transition-all duration-300 object-contain ${isScrolled ? 'w-9 h-9' : 'w-11 h-11'}`}
+          />
         </a>
 
         {/* Desktop Links */}

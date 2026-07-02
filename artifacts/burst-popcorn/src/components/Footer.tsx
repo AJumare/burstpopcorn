@@ -1,5 +1,4 @@
 import React from 'react';
-import { BurstLogo } from './BurstLogo';
 
 export default function Footer() {
   const scrollTo = (e: React.MouseEvent<HTMLAnchorElement>, id: string) => {
@@ -17,7 +16,7 @@ export default function Footer() {
           
           {/* Column 1: Brand */}
           <div className="flex flex-col items-start gap-6">
-            <BurstLogo size={64} />
+            <img src="/burst-logo.png" alt="Burst Popcorn Co." className="w-16 h-16 object-contain" />
             <div>
               <h3 className="font-serif text-brand-gold text-3xl font-medium mb-2">Burst Popcorn Co.</h3>
               <p className="font-serif text-brand-cream/70 text-xl italic">Something Remarkable Is Popping.</p>
