@@ -15,11 +15,11 @@ export default function About() {
           className="w-full md:w-1/2 h-[600px] lg:h-[800px] rounded-t-full rounded-b-sm overflow-hidden relative"
         >
           <img 
-            src="/gen/story-bg_2.jpg" 
-            alt="Hands holding Burst popcorn bag" 
-            className="w-full h-full object-cover"
+            src="/brand-packaging.png" 
+            alt="Burst Popcorn Co. packaging" 
+            className="w-full h-full object-cover object-center"
           />
-          <div className="absolute inset-0 bg-brand-dark/5"></div>
+          <div className="absolute inset-0 bg-brand-dark/0"></div>
         </motion.div>
 
         {/* Text Column */}
