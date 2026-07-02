@@ -23,7 +23,7 @@ export default function Hero() {
       {/* Background Image & Overlays */}
       <div className="absolute inset-0 z-0">
         <img 
-          src="/gen/hero-bg_2.jpg" 
+          src="/hero-brand.png" 
           alt="Burst Popcorn Co. packaging" 
           className="w-full h-full object-cover"
         />
