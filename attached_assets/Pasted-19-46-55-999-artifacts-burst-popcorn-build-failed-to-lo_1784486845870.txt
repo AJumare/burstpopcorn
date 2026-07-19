@@ -1,0 +1,36 @@
+19:46:55.999 
+artifacts/burst-popcorn build: failed to load config from /vercel/path0/artifacts/burst-popcorn/vite.config.ts
+19:46:56.003 
+artifacts/burst-popcorn build: error during build:
+19:46:56.004 
+artifacts/burst-popcorn build: Error: PORT environment variable is required but was not provided.
+19:46:56.005 
+artifacts/burst-popcorn build:     at file:///vercel/path0/artifacts/burst-popcorn/node_modules/.vite-temp/vite.config.ts.timestamp-1784486815876-9b8b912043c398.mjs:10:9
+19:46:56.005 
+artifacts/burst-popcorn build:     at ModuleJob.run (node:internal/modules/esm/module_job:437:25)
+19:46:56.005 
+artifacts/burst-popcorn build:     at async node:internal/modules/esm/loader:639:26
+19:46:56.006 
+artifacts/burst-popcorn build:     at async loadConfigFromBundledFile (file:///vercel/path0/node_modules/.pnpm/vite@7.3.5_@types+node@25.9.4_jiti@2.7.0_lightningcss@1.32.0_tsx@4.22.4_yaml@2.9.0/node_modules/vite/dist/node/chunks/config.js:35996:12)
+19:46:56.006 
+artifacts/burst-popcorn build:     at async bundleAndLoadConfigFile (file:///vercel/path0/node_modules/.pnpm/vite@7.3.5_@types+node@25.9.4_jiti@2.7.0_lightningcss@1.32.0_tsx@4.22.4_yaml@2.9.0/node_modules/vite/dist/node/chunks/config.js:35884:17)
+19:46:56.006 
+artifacts/burst-popcorn build:     at async loadConfigFromFile (file:///vercel/path0/node_modules/.pnpm/vite@7.3.5_@types+node@25.9.4_jiti@2.7.0_lightningcss@1.32.0_tsx@4.22.4_yaml@2.9.0/node_modules/vite/dist/node/chunks/config.js:35851:42)
+19:46:56.007 
+artifacts/burst-popcorn build:     at async resolveConfig (file:///vercel/path0/node_modules/.pnpm/vite@7.3.5_@types+node@25.9.4_jiti@2.7.0_lightningcss@1.32.0_tsx@4.22.4_yaml@2.9.0/node_modules/vite/dist/node/chunks/config.js:35500:22)
+19:46:56.007 
+artifacts/burst-popcorn build:     at async createBuilder (file:///vercel/path0/node_modules/.pnpm/vite@7.3.5_@types+node@25.9.4_jiti@2.7.0_lightningcss@1.32.0_tsx@4.22.4_yaml@2.9.0/node_modules/vite/dist/node/chunks/config.js:33955:19)
+19:46:56.007 
+artifacts/burst-popcorn build:     at async CAC.<anonymous> (file:///vercel/path0/node_modules/.pnpm/vite@7.3.5_@types+node@25.9.4_jiti@2.7.0_lightningcss@1.32.0_tsx@4.22.4_yaml@2.9.0/node_modules/vite/dist/node/cli.js:629:10)
+19:46:56.017 
+artifacts/burst-popcorn build: Failed
+19:46:56.048 
+/vercel/path0/artifacts/burst-popcorn:
+19:46:56.048 
+ ERR_PNPM_RECURSIVE_RUN_FIRST_FAIL  @workspace/burst-popcorn@0.0.0 build: `vite build --config vite.config.ts`
+19:46:56.049 
+Exit status 1
+19:46:56.103 
+ ELIFECYCLE  Command failed with exit code 1.
+19:46:56.124 
+Error: Command "pnpm run build" exited with 1
