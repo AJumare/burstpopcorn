@@ -35,6 +35,7 @@ router.post('/checkout', async (req, res) => {
 
     // Create a one-time plan for this specific order total
     const plan = await client.plans.create({
+      company_id: COMPANY_ID,
       product_id: PRODUCT_ID,
       plan_type: 'one_time',
       initial_price: totalUSD,

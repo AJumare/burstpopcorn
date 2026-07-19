@@ -8,7 +8,7 @@ async function initStripe() {
   if (!databaseUrl) throw new Error('DATABASE_URL is required for Stripe');
 
   logger.info('Running Stripe migrations…');
-  await runMigrations({ databaseUrl, schema: 'stripe' });
+  await runMigrations({ databaseUrl });
   logger.info('Stripe schema ready');
 
   const stripeSync = await getStripeSync();

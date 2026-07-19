@@ -31,7 +31,7 @@ async function initWhopClient(): Promise<Whop> {
     );
   }
 
-  const data = await resp.json();
+  const data = await resp.json() as any;
   const settings = data.items?.[0]?.settings;
 
   if (!settings?.api_key) {
