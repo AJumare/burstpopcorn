@@ -16,14 +16,14 @@ export default function Flavors() {
           <div className="w-12 h-px bg-brand-gold mx-auto"></div>
         </motion.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12">
+        <div className="grid grid-cols-3 gap-3 md:gap-12">
           {/* Salted Caramel */}
           <motion.div 
             initial={{ opacity: 0, y: 40 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-100px" }}
             transition={{ duration: 0.8, delay: 0.1 }}
-            className="group relative h-[500px] md:h-[600px] w-full rounded-sm overflow-hidden flex flex-col justify-end p-8 cursor-pointer"
+            className="group relative h-[220px] md:h-[600px] w-full rounded-sm overflow-hidden flex flex-col justify-end p-3 md:p-8 cursor-pointer"
           >
             <div className="absolute inset-0 z-0">
               <img 
@@ -35,14 +35,14 @@ export default function Flavors() {
             </div>
             
             <div className="relative z-10 text-center">
-              <p className="font-serif text-brand-cream/70 text-lg italic mb-4 opacity-0 transition-opacity duration-500 group-hover:opacity-100">
+              <p className="font-serif text-brand-cream/70 text-lg italic mb-4 opacity-0 transition-opacity duration-500 group-hover:opacity-100 hidden md:block">
                 Crafted in Small Batches · Rich Caramel Glaze
               </p>
-              <div className="inline-block bg-brand-gold text-brand-dark px-5 py-2 font-sans tracking-widest text-xs font-bold mb-3">
+              <div className="inline-block bg-brand-gold text-brand-dark px-2 md:px-5 py-1 md:py-2 font-sans tracking-widest text-[9px] md:text-xs font-bold mb-2">
                 SALTED CARAMEL
               </div>
               <div className="block">
-                <span className="inline-block border border-brand-gold/60 text-brand-gold font-sans tracking-widest text-[10px] px-3 py-1 uppercase">
+                <span className="inline-block border border-brand-gold/60 text-brand-gold font-sans tracking-widest text-[8px] md:text-[10px] px-2 py-0.5 uppercase">
                   Available
                 </span>
               </div>
@@ -55,7 +55,7 @@ export default function Flavors() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-100px" }}
             transition={{ duration: 0.8, delay: 0.3 }}
-            className="group relative h-[500px] md:h-[600px] w-full rounded-sm overflow-hidden flex flex-col justify-end p-8 cursor-pointer"
+            className="group relative h-[220px] md:h-[600px] w-full rounded-sm overflow-hidden flex flex-col justify-end p-3 md:p-8 cursor-pointer"
           >
             <div className="absolute inset-0 z-0">
               <img 
@@ -67,14 +67,14 @@ export default function Flavors() {
             </div>
             
             <div className="relative z-10 text-center">
-              <p className="font-serif text-brand-cream/70 text-lg italic mb-4 opacity-0 transition-opacity duration-500 group-hover:opacity-100">
+              <p className="font-serif text-brand-cream/70 text-lg italic mb-4 opacity-0 transition-opacity duration-500 group-hover:opacity-100 hidden md:block">
                 Bold Flavor. Beautifully Crafted.
               </p>
-              <div className="inline-block bg-brand-mid text-brand-cream px-5 py-2 font-sans tracking-widest text-xs font-bold mb-3">
-                CARAMEL & CHEESE MIX
+              <div className="inline-block bg-brand-mid text-brand-cream px-2 md:px-5 py-1 md:py-2 font-sans tracking-widest text-[9px] md:text-xs font-bold mb-2">
+                CARAMEL & CHEESE
               </div>
               <div className="block">
-                <span className="inline-block border border-brand-cream/40 text-brand-cream/70 font-sans tracking-widest text-[10px] px-3 py-1 uppercase">
+                <span className="inline-block border border-brand-cream/40 text-brand-cream/70 font-sans tracking-widest text-[8px] md:text-[10px] px-2 py-0.5 uppercase">
                   Coming Soon
                 </span>
               </div>
@@ -87,7 +87,7 @@ export default function Flavors() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-100px" }}
             transition={{ duration: 0.8, delay: 0.5 }}
-            className="group relative h-[500px] md:h-[600px] w-full rounded-sm overflow-hidden flex flex-col justify-end p-8 cursor-pointer"
+            className="group relative h-[220px] md:h-[600px] w-full rounded-sm overflow-hidden flex flex-col justify-end p-3 md:p-8 cursor-pointer"
           >
             <div className="absolute inset-0 z-0">
               <img 
@@ -99,14 +99,14 @@ export default function Flavors() {
             </div>
             
             <div className="relative z-10 text-center">
-              <p className="font-serif text-brand-cream/70 text-lg italic mb-4 opacity-0 transition-opacity duration-500 group-hover:opacity-100">
+              <p className="font-serif text-brand-cream/70 text-lg italic mb-4 opacity-0 transition-opacity duration-500 group-hover:opacity-100 hidden md:block">
                 Crunchy. Buttery. Irresistible.
               </p>
-              <div className="inline-block bg-brand-mid text-brand-cream px-5 py-2 font-sans tracking-widest text-xs font-bold mb-3">
-                PEANUT BRITTLE CARAMEL
+              <div className="inline-block bg-brand-mid text-brand-cream px-2 md:px-5 py-1 md:py-2 font-sans tracking-widest text-[9px] md:text-xs font-bold mb-2">
+                PEANUT BRITTLE
               </div>
               <div className="block">
-                <span className="inline-block border border-brand-cream/40 text-brand-cream/70 font-sans tracking-widest text-[10px] px-3 py-1 uppercase">
+                <span className="inline-block border border-brand-cream/40 text-brand-cream/70 font-sans tracking-widest text-[8px] md:text-[10px] px-2 py-0.5 uppercase">
                   Coming Soon
                 </span>
               </div>
