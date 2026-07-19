@@ -2,8 +2,6 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { ChevronDown } from 'lucide-react';
 
-const WHATSAPP_NUMBER = '2349025862461';
-
 const FLAVORS = [
   { value: 'salted-caramel', label: 'Salted Caramel', available: true },
   { value: 'caramel-cheese', label: 'Caramel & Cheese Mix', available: false },
@@ -22,13 +20,16 @@ const STATES = [
   { value: 'other', label: 'Other State', available: false },
 ];
 
+// Resolve API base path for monorepo routing
+const API_BASE = (import.meta.env.BASE_URL ?? '/').replace(/\/$/, '') + '/api';
+
 export default function Order() {
   const [flavor, setFlavor] = useState('salted-caramel');
   const [quantity, setQuantity] = useState(1);
   const [state, setState] = useState('abuja');
   const [form, setForm] = useState({ name: '', phone: '', address: '' });
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const [submitted, setSubmitted] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const selectedState = STATES.find(s => s.value === state);
   const deliveryAvailable = selectedState?.available ?? false;
@@ -44,49 +45,62 @@ export default function Order() {
     return e;
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const errs = validate();
     if (Object.keys(errs).length) { setErrors(errs); return; }
     setErrors({});
+    setLoading(true);
 
-    const selectedFlavor = FLAVORS.find(f => f.value === flavor)?.label ?? flavor;
-    const message =
-      `New Order — Burst Popcorn Co.\n\n` +
-      `Flavor: ${selectedFlavor}\n` +
-      `Quantity: ${quantity} pack${quantity > 1 ? 's' : ''}\n` +
-      `Subtotal: ₦${subtotal.toLocaleString()}\n` +
-      `Delivery (Abuja): ₦${DELIVERY_FEE.toLocaleString()}\n` +
-      `Total: ₦${total.toLocaleString()}\n\n` +
-      `— Customer Details —\n` +
-      `Name: ${form.name}\n` +
-      `Phone: ${form.phone}\n` +
-      `Address: ${form.address}`;
+    try {
+      const selectedFlavor = FLAVORS.find(f => f.value === flavor)?.label ?? flavor;
+      const res = await fetch(`${API_BASE}/whop/checkout`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          quantity,
+          flavor: selectedFlavor,
+          name: form.name,
+          phone: form.phone,
+          address: form.address,
+        }),
+      });
 
-    window.open(
-      `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`,
-      '_blank',
-      'noopener,noreferrer'
-    );
-    setSubmitted(true);
+      const data = await res.json();
+
+      if (!res.ok || !data.purchase_url) {
+        throw new Error(data.error ?? 'Could not create checkout');
+      }
+
+      // Redirect to Whop hosted checkout
+      window.location.href = data.purchase_url;
+    } catch (err: any) {
+      setErrors({ submit: err.message ?? 'Something went wrong. Please try again.' });
+      setLoading(false);
+    }
   };
 
-  if (submitted) {
+  // Success state — shown when redirected back from Whop
+  const urlParams = new URLSearchParams(window.location.search);
+  if (urlParams.get('order') === 'success') {
+    const customerName = urlParams.get('name') ?? '';
     return (
       <section id="order" className="w-full bg-brand-dark py-24 px-6 md:px-12">
         <div className="max-w-2xl mx-auto text-center">
           <div className="w-16 h-16 rounded-full border-2 border-brand-gold mx-auto mb-8 flex items-center justify-center">
             <span className="text-brand-gold text-2xl">✦</span>
           </div>
-          <h2 className="font-serif text-4xl text-brand-cream mb-4">Order Received</h2>
+          <h2 className="font-serif text-4xl text-brand-cream mb-4">
+            Thank you{customerName ? `, ${customerName.split(' ')[0]}` : ''}!
+          </h2>
           <p className="font-serif text-brand-cream/60 text-xl italic mb-8">
-            Your details have been sent. We'll be in touch shortly to confirm your order.
+            Your order is confirmed. We'll be in touch to arrange delivery.
           </p>
           <button
-            onClick={() => setSubmitted(false)}
+            onClick={() => window.location.href = window.location.pathname}
             className="font-sans text-brand-gold tracking-widest text-xs uppercase border border-brand-gold/40 px-6 py-3 hover:border-brand-gold transition-colors"
           >
-            Place Another Order
+            Back to Home
           </button>
         </div>
       </section>
@@ -107,7 +121,7 @@ export default function Order() {
           <h2 className="font-serif text-3xl md:text-6xl text-brand-cream mb-3 md:mb-4">Place an Order</h2>
           <div className="w-12 h-px bg-brand-gold mx-auto mb-3 md:mb-6" />
           <p className="font-serif text-brand-cream/60 text-base md:text-xl italic max-w-xl mx-auto">
-            Fill in your details and we'll confirm and deliver to your door.
+            Fill in your details and pay securely online.
           </p>
         </motion.div>
 
@@ -133,12 +147,7 @@ export default function Order() {
                   className="w-full appearance-none bg-transparent border border-brand-mid/50 text-brand-cream font-sans text-sm px-3 py-2.5 pr-10 focus:outline-none focus:border-brand-gold transition-colors cursor-pointer"
                 >
                   {FLAVORS.map(f => (
-                    <option
-                      key={f.value}
-                      value={f.value}
-                      disabled={!f.available}
-                      className="bg-[#1e160e] text-brand-cream disabled:text-brand-cream/40"
-                    >
+                    <option key={f.value} value={f.value} disabled={!f.available} className="bg-[#1e160e] text-brand-cream disabled:text-brand-cream/40">
                       {f.label}{!f.available ? ' — Coming Soon' : ''}
                     </option>
                   ))}
@@ -151,57 +160,34 @@ export default function Order() {
             <div className="flex flex-col gap-1.5">
               <label className="font-sans tracking-widest text-xs text-brand-cream/50 uppercase">Quantity</label>
               <div className="flex items-center gap-0">
-                <button
-                  type="button"
-                  onClick={() => setQuantity(q => Math.max(1, q - 1))}
-                  disabled={quantity <= 1}
-                  className="w-9 h-9 border border-brand-mid/50 text-brand-cream/70 hover:border-brand-gold hover:text-brand-gold disabled:opacity-30 disabled:cursor-not-allowed transition-colors flex items-center justify-center font-sans text-lg"
-                >
-                  −
-                </button>
+                <button type="button" onClick={() => setQuantity(q => Math.max(1, q - 1))} disabled={quantity <= 1}
+                  className="w-9 h-9 border border-brand-mid/50 text-brand-cream/70 hover:border-brand-gold hover:text-brand-gold disabled:opacity-30 disabled:cursor-not-allowed transition-colors flex items-center justify-center font-sans text-lg">−</button>
                 <div className="w-12 h-9 border-t border-b border-brand-mid/50 flex items-center justify-center">
                   <span className="font-sans text-brand-cream font-medium">{quantity}</span>
                 </div>
-                <button
-                  type="button"
-                  onClick={() => setQuantity(q => Math.min(20, q + 1))}
-                  disabled={quantity >= 20}
-                  className="w-9 h-9 border border-brand-mid/50 text-brand-cream/70 hover:border-brand-gold hover:text-brand-gold disabled:opacity-30 disabled:cursor-not-allowed transition-colors flex items-center justify-center font-sans text-lg"
-                >
-                  +
-                </button>
-                <span className="ml-3 font-sans text-brand-cream/40 text-xs tracking-wider">
-                  ₦{PRODUCT_PRICE.toLocaleString()} / pack
-                </span>
+                <button type="button" onClick={() => setQuantity(q => Math.min(20, q + 1))} disabled={quantity >= 20}
+                  className="w-9 h-9 border border-brand-mid/50 text-brand-cream/70 hover:border-brand-gold hover:text-brand-gold disabled:opacity-30 disabled:cursor-not-allowed transition-colors flex items-center justify-center font-sans text-lg">+</button>
+                <span className="ml-3 font-sans text-brand-cream/40 text-xs tracking-wider">₦{PRODUCT_PRICE.toLocaleString()} / pack</span>
               </div>
             </div>
 
-            {/* Divider */}
             <div className="border-t border-brand-mid/30" />
 
             {/* Name */}
             <div className="flex flex-col gap-1.5">
               <label className="font-sans tracking-widest text-xs text-brand-cream/50 uppercase">Full Name</label>
-              <input
-                type="text"
-                value={form.name}
-                onChange={e => setForm(f => ({ ...f, name: e.target.value }))}
+              <input type="text" value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))}
                 placeholder="Your name"
-                className="bg-transparent border border-brand-mid/50 text-brand-cream font-sans text-sm px-3 py-2.5 placeholder:text-brand-cream/20 focus:outline-none focus:border-brand-gold transition-colors"
-              />
+                className="bg-transparent border border-brand-mid/50 text-brand-cream font-sans text-sm px-3 py-2.5 placeholder:text-brand-cream/20 focus:outline-none focus:border-brand-gold transition-colors" />
               {errors.name && <span className="font-sans text-xs text-red-400">{errors.name}</span>}
             </div>
 
             {/* Phone */}
             <div className="flex flex-col gap-1.5">
               <label className="font-sans tracking-widest text-xs text-brand-cream/50 uppercase">Phone Number</label>
-              <input
-                type="tel"
-                value={form.phone}
-                onChange={e => setForm(f => ({ ...f, phone: e.target.value }))}
+              <input type="tel" value={form.phone} onChange={e => setForm(f => ({ ...f, phone: e.target.value }))}
                 placeholder="+234 800 000 0000"
-                className="bg-transparent border border-brand-mid/50 text-brand-cream font-sans text-sm px-3 py-2.5 placeholder:text-brand-cream/20 focus:outline-none focus:border-brand-gold transition-colors"
-              />
+                className="bg-transparent border border-brand-mid/50 text-brand-cream font-sans text-sm px-3 py-2.5 placeholder:text-brand-cream/20 focus:outline-none focus:border-brand-gold transition-colors" />
               {errors.phone && <span className="font-sans text-xs text-red-400">{errors.phone}</span>}
             </div>
 
@@ -209,11 +195,8 @@ export default function Order() {
             <div className="flex flex-col gap-1.5">
               <label className="font-sans tracking-widest text-xs text-brand-cream/50 uppercase">State</label>
               <div className="relative">
-                <select
-                  value={state}
-                  onChange={e => setState(e.target.value)}
-                  className="w-full appearance-none bg-transparent border border-brand-mid/50 text-brand-cream font-sans text-sm px-3 py-2.5 pr-10 focus:outline-none focus:border-brand-gold transition-colors cursor-pointer"
-                >
+                <select value={state} onChange={e => setState(e.target.value)}
+                  className="w-full appearance-none bg-transparent border border-brand-mid/50 text-brand-cream font-sans text-sm px-3 py-2.5 pr-10 focus:outline-none focus:border-brand-gold transition-colors cursor-pointer">
                   {STATES.map(s => (
                     <option key={s.value} value={s.value} className="bg-[#1e160e] text-brand-cream">
                       {s.label}{!s.available ? ' — Unavailable' : ''}
@@ -222,23 +205,17 @@ export default function Order() {
                 </select>
                 <ChevronDown size={14} className="absolute right-4 top-1/2 -translate-y-1/2 text-brand-gold pointer-events-none" />
               </div>
-              {!deliveryAvailable && state !== 'abuja' && (
-                <span className="font-sans text-xs text-brand-gold/70">
-                  Delivery is currently only available in Abuja. We're expanding soon.
-                </span>
+              {!deliveryAvailable && (
+                <span className="font-sans text-xs text-brand-gold/70">Delivery is currently only available in Abuja. We're expanding soon.</span>
               )}
             </div>
 
             {/* Address */}
             <div className="flex flex-col gap-1.5">
               <label className="font-sans tracking-widest text-xs text-brand-cream/50 uppercase">Delivery Address</label>
-              <textarea
-                value={form.address}
-                onChange={e => setForm(f => ({ ...f, address: e.target.value }))}
-                placeholder="Street address, area, landmark…"
-                rows={2}
-                className="bg-transparent border border-brand-mid/50 text-brand-cream font-sans text-sm px-3 py-2.5 placeholder:text-brand-cream/20 focus:outline-none focus:border-brand-gold transition-colors resize-none"
-              />
+              <textarea value={form.address} onChange={e => setForm(f => ({ ...f, address: e.target.value }))}
+                placeholder="Street address, area, landmark…" rows={2}
+                className="bg-transparent border border-brand-mid/50 text-brand-cream font-sans text-sm px-3 py-2.5 placeholder:text-brand-cream/20 focus:outline-none focus:border-brand-gold transition-colors resize-none" />
               {errors.address && <span className="font-sans text-xs text-red-400">{errors.address}</span>}
             </div>
 
@@ -259,17 +236,28 @@ export default function Order() {
             </div>
 
             {/* Submit */}
+            {errors.submit && (
+              <p className="font-sans text-xs text-red-400 text-center">{errors.submit}</p>
+            )}
+            {errors.state && (
+              <p className="font-sans text-xs text-brand-gold/70 text-center">{errors.state}</p>
+            )}
+
             <button
               type="submit"
-              disabled={!deliveryAvailable}
-              className="w-full bg-brand-gold hover:bg-[#c48a30] text-brand-dark font-sans font-semibold tracking-widest text-sm uppercase py-3 md:py-4 transition-colors duration-300 disabled:opacity-40 disabled:cursor-not-allowed"
+              disabled={!deliveryAvailable || loading}
+              className="w-full bg-brand-gold hover:bg-[#c48a30] text-brand-dark font-sans font-semibold tracking-widest text-sm uppercase py-3 md:py-4 transition-colors duration-300 disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
-              Place Order
+              {loading ? (
+                <>
+                  <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24" fill="none">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
+                  </svg>
+                  Preparing checkout…
+                </>
+              ) : 'Pay Now'}
             </button>
-
-            {errors.state && (
-              <p className="font-sans text-xs text-brand-gold/70 text-center -mt-3">{errors.state}</p>
-            )}
           </form>
         </motion.div>
       </div>
