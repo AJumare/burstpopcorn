@@ -49,8 +49,8 @@ export default function Navbar() {
 
         {/* Desktop Links */}
         <div className="hidden md:flex gap-10">
-          {['FLAVORS', 'OUR STORY', 'CONTACT'].map((item) => {
-            const id = `#${item.toLowerCase().replace(' ', '-')}`;
+          {['FLAVORS', 'ORDER', 'OUR STORY', 'CONTACT'].map((item) => {
+            const id = `#${item.toLowerCase().replace(/ /g, '-')}`;
             return (
               <a
                 key={item}
@@ -78,12 +78,12 @@ export default function Navbar() {
       {/* Mobile Menu Dropdown */}
       <div 
         className={`md:hidden absolute top-full left-0 w-full bg-brand-dark/95 backdrop-blur-md overflow-hidden transition-all duration-300 ease-in-out ${
-          mobileMenuOpen ? 'max-h-64 border-b border-brand-mid/30' : 'max-h-0'
+          mobileMenuOpen ? 'max-h-80 border-b border-brand-mid/30' : 'max-h-0'
         }`}
       >
         <div className="px-6 py-4 flex flex-col gap-6">
-          {['FLAVORS', 'OUR STORY', 'CONTACT'].map((item) => {
-            const id = `#${item.toLowerCase().replace(' ', '-')}`;
+          {['FLAVORS', 'ORDER', 'OUR STORY', 'CONTACT'].map((item) => {
+            const id = `#${item.toLowerCase().replace(/ /g, '-')}`;
             return (
               <a
                 key={item}
