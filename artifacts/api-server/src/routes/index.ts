@@ -1,10 +1,10 @@
-import { Router, type IRouter } from "express";
-import healthRouter from "./health";
-import whopRouter from "./whop";
+import { Router, type IRouter } from 'express';
+import healthRouter from './health';
+import stripeRouter from './stripe';
 
 const router: IRouter = Router();
 
 router.use(healthRouter);
-router.use("/whop", whopRouter);
+router.use('/stripe', stripeRouter);
 
 export default router;
