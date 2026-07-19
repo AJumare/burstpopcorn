@@ -1,0 +1,6 @@
+{
+  "outputDirectory": "artifacts/burst-popcorn/dist/public",
+  "buildCommand": "pnpm --filter @workspace/burst-popcorn run build",
+  "installCommand": "pnpm install",
+  "framework": null
+}
