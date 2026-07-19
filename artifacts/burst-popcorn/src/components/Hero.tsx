@@ -62,11 +62,6 @@ export default function Hero() {
             Gourmet Popcorn. Remarkable Flavor.
           </motion.p>
 
-          <motion.div variants={item}>
-            <span className="inline-block border border-brand-gold/60 text-brand-gold font-sans tracking-[0.25em] text-xs px-5 py-2 uppercase">
-              Coming Soon
-            </span>
-          </motion.div>
         </motion.div>
       </div>
 

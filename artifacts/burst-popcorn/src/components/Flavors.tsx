@@ -16,7 +16,7 @@ export default function Flavors() {
           <div className="w-12 h-px bg-brand-gold mx-auto"></div>
         </motion.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-12">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12">
           {/* Salted Caramel */}
           <motion.div 
             initial={{ opacity: 0, y: 40 }}
@@ -42,8 +42,8 @@ export default function Flavors() {
                 SALTED CARAMEL
               </div>
               <div className="block">
-                <span className="inline-block border border-brand-cream/40 text-brand-cream/70 font-sans tracking-widest text-[10px] px-3 py-1 uppercase">
-                  Coming Soon
+                <span className="inline-block border border-brand-gold/60 text-brand-gold font-sans tracking-widest text-[10px] px-3 py-1 uppercase">
+                  Available
                 </span>
               </div>
             </div>
@@ -87,7 +87,7 @@ export default function Flavors() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-100px" }}
             transition={{ duration: 0.8, delay: 0.5 }}
-            className="group relative h-[500px] md:h-[600px] w-full rounded-sm overflow-hidden flex flex-col justify-end p-8 cursor-pointer md:col-span-2 lg:col-span-1"
+            className="group relative h-[500px] md:h-[600px] w-full rounded-sm overflow-hidden flex flex-col justify-end p-8 cursor-pointer"
           >
             <div className="absolute inset-0 z-0">
               <img 

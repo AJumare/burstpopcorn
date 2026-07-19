@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Minus, Plus, MessageCircle } from 'lucide-react';
 
-const WHATSAPP_NUMBER = '234XXXXXXXXXX';
+const WHATSAPP_NUMBER = '2349025862461';
 
 const PRODUCT = {
   name: 'Salted Caramel',
