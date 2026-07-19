@@ -3,14 +3,14 @@ import { motion } from 'framer-motion';
 
 export default function Flavors() {
   return (
-    <section id="flavors" className="w-full bg-brand-dark py-20 px-6 md:px-12">
+    <section id="flavors" className="w-full bg-brand-dark py-10 md:py-20 px-4 md:px-12">
       <div className="max-w-7xl mx-auto">
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-100px" }}
           transition={{ duration: 0.8 }}
-          className="text-center mb-16"
+          className="text-center mb-8 md:mb-16"
         >
           <h2 className="font-serif text-5xl md:text-6xl text-brand-cream mb-4">The Collection</h2>
           <div className="w-12 h-px bg-brand-gold mx-auto"></div>

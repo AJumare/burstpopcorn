@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 
 export default function About() {
   return (
-    <section id="our-story" className="w-full bg-brand-cream py-24 px-6 md:px-12">
+    <section id="our-story" className="w-full bg-brand-cream py-10 md:py-24 px-4 md:px-12">
       <div className="max-w-7xl mx-auto flex flex-row gap-6 md:gap-24 items-center">
         
         {/* Image Column */}
@@ -29,14 +29,13 @@ export default function About() {
           transition={{ duration: 1, ease: "easeOut", delay: 0.2 }}
           className="flex-1 flex flex-col"
         >
-          <h2 className="font-serif text-2xl md:text-6xl text-brand-dark mb-3 md:mb-6">Welcome to Burst</h2>
-          <div className="text-brand-gold text-xl md:text-2xl mb-4 md:mb-10">✦</div>
+          <h2 className="font-serif text-xl md:text-6xl text-brand-dark mb-2 md:mb-6">Welcome to Burst</h2>
+          <div className="text-brand-gold text-base md:text-2xl mb-3 md:mb-10">✦</div>
           
-          <div className="font-serif text-brand-dark/80 text-sm md:text-2xl leading-relaxed space-y-3 md:space-y-6">
+          <div className="font-serif text-brand-dark/80 text-xs md:text-2xl leading-snug md:leading-relaxed space-y-2 md:space-y-6">
             <p>Ever craved popcorn that actually felt worth the indulgence?</p>
             
-            <p className="hidden md:block">Not the ordinary kind.<br/>
-            Not the ones that are all sugar, all salt, or all hype.</p>
+            <p>Not the ordinary kind. Not all sugar, all salt, or all hype.</p>
             
             <p className="hidden md:block">We wanted popcorn with rich caramel, real cheese, premium ingredients, and the kind of crunch that makes you reach for just one more handful.</p>
             
@@ -44,13 +43,13 @@ export default function About() {
             
             <p>That's how <span className="text-brand-gold font-medium italic">BURST</span> began.</p>
             
-            <p className="space-y-0.5 md:space-y-1 block">
+            <p>
               <span className="block text-brand-gold italic">Small batches.</span>
               <span className="block text-brand-gold italic">Remarkable flavour.</span>
               <span className="block text-brand-gold italic">Made to be shared.</span>
             </p>
             
-            <p className="pt-2 md:pt-4 text-brand-dark/70 hidden md:block">This is only the beginning.</p>
+            <p className="text-brand-dark/70">This is only the beginning.</p>
           </div>
         </motion.div>
 

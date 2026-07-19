@@ -94,7 +94,7 @@ export default function Order() {
   }
 
   return (
-    <section id="order" className="w-full bg-brand-dark py-24 px-6 md:px-12">
+    <section id="order" className="w-full bg-brand-dark py-10 md:py-24 px-4 md:px-12">
       <div className="max-w-7xl mx-auto">
         {/* Heading */}
         <motion.div
@@ -102,11 +102,11 @@ export default function Order() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: '-100px' }}
           transition={{ duration: 0.8 }}
-          className="text-center mb-16"
+          className="text-center mb-8 md:mb-16"
         >
-          <h2 className="font-serif text-5xl md:text-6xl text-brand-cream mb-4">Place an Order</h2>
-          <div className="w-12 h-px bg-brand-gold mx-auto mb-6" />
-          <p className="font-serif text-brand-cream/60 text-xl italic max-w-xl mx-auto">
+          <h2 className="font-serif text-3xl md:text-6xl text-brand-cream mb-3 md:mb-4">Place an Order</h2>
+          <div className="w-12 h-px bg-brand-gold mx-auto mb-3 md:mb-6" />
+          <p className="font-serif text-brand-cream/60 text-base md:text-xl italic max-w-xl mx-auto">
             Fill in your details and we'll confirm and deliver to your door.
           </p>
         </motion.div>
@@ -121,16 +121,16 @@ export default function Order() {
         >
           <form
             onSubmit={handleSubmit}
-            className="bg-[#1e160e] border border-brand-mid/40 p-8 md:p-12 flex flex-col gap-7"
+            className="bg-[#1e160e] border border-brand-mid/40 p-5 md:p-12 flex flex-col gap-4 md:gap-7"
           >
             {/* Flavor */}
-            <div className="flex flex-col gap-2">
+            <div className="flex flex-col gap-1.5">
               <label className="font-sans tracking-widest text-xs text-brand-cream/50 uppercase">Flavor</label>
               <div className="relative">
                 <select
                   value={flavor}
                   onChange={e => setFlavor(e.target.value)}
-                  className="w-full appearance-none bg-transparent border border-brand-mid/50 text-brand-cream font-sans text-sm px-4 py-3 pr-10 focus:outline-none focus:border-brand-gold transition-colors cursor-pointer"
+                  className="w-full appearance-none bg-transparent border border-brand-mid/50 text-brand-cream font-sans text-sm px-3 py-2.5 pr-10 focus:outline-none focus:border-brand-gold transition-colors cursor-pointer"
                 >
                   {FLAVORS.map(f => (
                     <option
@@ -148,29 +148,29 @@ export default function Order() {
             </div>
 
             {/* Quantity */}
-            <div className="flex flex-col gap-2">
+            <div className="flex flex-col gap-1.5">
               <label className="font-sans tracking-widest text-xs text-brand-cream/50 uppercase">Quantity</label>
               <div className="flex items-center gap-0">
                 <button
                   type="button"
                   onClick={() => setQuantity(q => Math.max(1, q - 1))}
                   disabled={quantity <= 1}
-                  className="w-11 h-11 border border-brand-mid/50 text-brand-cream/70 hover:border-brand-gold hover:text-brand-gold disabled:opacity-30 disabled:cursor-not-allowed transition-colors flex items-center justify-center font-sans text-lg"
+                  className="w-9 h-9 border border-brand-mid/50 text-brand-cream/70 hover:border-brand-gold hover:text-brand-gold disabled:opacity-30 disabled:cursor-not-allowed transition-colors flex items-center justify-center font-sans text-lg"
                 >
                   −
                 </button>
-                <div className="w-16 h-11 border-t border-b border-brand-mid/50 flex items-center justify-center">
+                <div className="w-12 h-9 border-t border-b border-brand-mid/50 flex items-center justify-center">
                   <span className="font-sans text-brand-cream font-medium">{quantity}</span>
                 </div>
                 <button
                   type="button"
                   onClick={() => setQuantity(q => Math.min(20, q + 1))}
                   disabled={quantity >= 20}
-                  className="w-11 h-11 border border-brand-mid/50 text-brand-cream/70 hover:border-brand-gold hover:text-brand-gold disabled:opacity-30 disabled:cursor-not-allowed transition-colors flex items-center justify-center font-sans text-lg"
+                  className="w-9 h-9 border border-brand-mid/50 text-brand-cream/70 hover:border-brand-gold hover:text-brand-gold disabled:opacity-30 disabled:cursor-not-allowed transition-colors flex items-center justify-center font-sans text-lg"
                 >
                   +
                 </button>
-                <span className="ml-4 font-sans text-brand-cream/40 text-xs tracking-wider">
+                <span className="ml-3 font-sans text-brand-cream/40 text-xs tracking-wider">
                   ₦{PRODUCT_PRICE.toLocaleString()} / pack
                 </span>
               </div>
@@ -180,39 +180,39 @@ export default function Order() {
             <div className="border-t border-brand-mid/30" />
 
             {/* Name */}
-            <div className="flex flex-col gap-2">
+            <div className="flex flex-col gap-1.5">
               <label className="font-sans tracking-widest text-xs text-brand-cream/50 uppercase">Full Name</label>
               <input
                 type="text"
                 value={form.name}
                 onChange={e => setForm(f => ({ ...f, name: e.target.value }))}
                 placeholder="Your name"
-                className="bg-transparent border border-brand-mid/50 text-brand-cream font-sans text-sm px-4 py-3 placeholder:text-brand-cream/20 focus:outline-none focus:border-brand-gold transition-colors"
+                className="bg-transparent border border-brand-mid/50 text-brand-cream font-sans text-sm px-3 py-2.5 placeholder:text-brand-cream/20 focus:outline-none focus:border-brand-gold transition-colors"
               />
               {errors.name && <span className="font-sans text-xs text-red-400">{errors.name}</span>}
             </div>
 
             {/* Phone */}
-            <div className="flex flex-col gap-2">
+            <div className="flex flex-col gap-1.5">
               <label className="font-sans tracking-widest text-xs text-brand-cream/50 uppercase">Phone Number</label>
               <input
                 type="tel"
                 value={form.phone}
                 onChange={e => setForm(f => ({ ...f, phone: e.target.value }))}
                 placeholder="+234 800 000 0000"
-                className="bg-transparent border border-brand-mid/50 text-brand-cream font-sans text-sm px-4 py-3 placeholder:text-brand-cream/20 focus:outline-none focus:border-brand-gold transition-colors"
+                className="bg-transparent border border-brand-mid/50 text-brand-cream font-sans text-sm px-3 py-2.5 placeholder:text-brand-cream/20 focus:outline-none focus:border-brand-gold transition-colors"
               />
               {errors.phone && <span className="font-sans text-xs text-red-400">{errors.phone}</span>}
             </div>
 
             {/* State */}
-            <div className="flex flex-col gap-2">
+            <div className="flex flex-col gap-1.5">
               <label className="font-sans tracking-widest text-xs text-brand-cream/50 uppercase">State</label>
               <div className="relative">
                 <select
                   value={state}
                   onChange={e => setState(e.target.value)}
-                  className="w-full appearance-none bg-transparent border border-brand-mid/50 text-brand-cream font-sans text-sm px-4 py-3 pr-10 focus:outline-none focus:border-brand-gold transition-colors cursor-pointer"
+                  className="w-full appearance-none bg-transparent border border-brand-mid/50 text-brand-cream font-sans text-sm px-3 py-2.5 pr-10 focus:outline-none focus:border-brand-gold transition-colors cursor-pointer"
                 >
                   {STATES.map(s => (
                     <option key={s.value} value={s.value} className="bg-[#1e160e] text-brand-cream">
@@ -230,20 +230,20 @@ export default function Order() {
             </div>
 
             {/* Address */}
-            <div className="flex flex-col gap-2">
+            <div className="flex flex-col gap-1.5">
               <label className="font-sans tracking-widest text-xs text-brand-cream/50 uppercase">Delivery Address</label>
               <textarea
                 value={form.address}
                 onChange={e => setForm(f => ({ ...f, address: e.target.value }))}
                 placeholder="Street address, area, landmark…"
-                rows={3}
-                className="bg-transparent border border-brand-mid/50 text-brand-cream font-sans text-sm px-4 py-3 placeholder:text-brand-cream/20 focus:outline-none focus:border-brand-gold transition-colors resize-none"
+                rows={2}
+                className="bg-transparent border border-brand-mid/50 text-brand-cream font-sans text-sm px-3 py-2.5 placeholder:text-brand-cream/20 focus:outline-none focus:border-brand-gold transition-colors resize-none"
               />
               {errors.address && <span className="font-sans text-xs text-red-400">{errors.address}</span>}
             </div>
 
             {/* Price summary */}
-            <div className="border border-brand-mid/30 p-5 flex flex-col gap-2">
+            <div className="border border-brand-mid/30 p-3 md:p-5 flex flex-col gap-2">
               <div className="flex justify-between font-sans text-xs text-brand-cream/50 tracking-wider uppercase">
                 <span>{quantity} × Salted Caramel</span>
                 <span>₦{subtotal.toLocaleString()}</span>
@@ -262,7 +262,7 @@ export default function Order() {
             <button
               type="submit"
               disabled={!deliveryAvailable}
-              className="w-full bg-brand-gold hover:bg-[#c48a30] text-brand-dark font-sans font-semibold tracking-widest text-sm uppercase py-4 transition-colors duration-300 disabled:opacity-40 disabled:cursor-not-allowed"
+              className="w-full bg-brand-gold hover:bg-[#c48a30] text-brand-dark font-sans font-semibold tracking-widest text-sm uppercase py-3 md:py-4 transition-colors duration-300 disabled:opacity-40 disabled:cursor-not-allowed"
             >
               Place Order
             </button>

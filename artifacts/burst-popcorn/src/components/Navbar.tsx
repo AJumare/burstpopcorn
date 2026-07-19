@@ -14,38 +14,40 @@ export default function Navbar() {
     document.querySelector(id)?.scrollIntoView({ behavior: 'smooth' });
   };
 
+  const links = ['FLAVORS', 'ORDER', 'OUR STORY', 'CONTACT'];
+
   return (
     <nav
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
         isScrolled
-          ? 'bg-brand-dark/80 backdrop-blur-md py-3 shadow-lg'
-          : 'bg-brand-dark py-5'
+          ? 'bg-brand-dark/80 backdrop-blur-md py-2 shadow-lg'
+          : 'bg-brand-dark py-3'
       }`}
     >
-      <div className="max-w-7xl mx-auto px-6 md:px-12 flex justify-between items-center">
+      <div className="max-w-7xl mx-auto px-4 md:px-12 flex justify-between items-center gap-3">
         {/* Logo */}
         <a
           href="#"
           onClick={(e) => { e.preventDefault(); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
-          className="flex items-center group"
+          className="flex items-center flex-shrink-0"
         >
           <img
             src="/burst-logo.png"
             alt="Burst Popcorn Co."
-            className={`transition-all duration-300 object-contain ${isScrolled ? 'w-9 h-9' : 'w-11 h-11'}`}
+            className={`transition-all duration-300 object-contain ${isScrolled ? 'w-8 h-8' : 'w-10 h-10'}`}
           />
         </a>
 
-        {/* Desktop-only links */}
-        <div className="hidden md:flex gap-10">
-          {['FLAVORS', 'ORDER', 'OUR STORY', 'CONTACT'].map((item) => {
+        {/* Nav links — visible on all screen sizes */}
+        <div className="flex gap-3 md:gap-10 flex-wrap justify-end">
+          {links.map((item) => {
             const id = `#${item.toLowerCase().replace(/ /g, '-')}`;
             return (
               <a
                 key={item}
                 href={id}
                 onClick={(e) => scrollTo(e, id)}
-                className="font-sans tracking-widest text-xs font-medium text-brand-gold hover:text-brand-cream transition-colors duration-300"
+                className="font-sans tracking-widest text-[10px] md:text-xs font-medium text-brand-gold hover:text-brand-cream transition-colors duration-300 whitespace-nowrap"
               >
                 {item}
               </a>
