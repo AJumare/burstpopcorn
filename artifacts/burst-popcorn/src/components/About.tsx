@@ -42,7 +42,6 @@ export default function About() {
                 <span className="block text-brand-gold italic">Remarkable flavour.</span>
                 <span className="block text-brand-gold italic">Made to be shared.</span>
               </p>
-              <p className="text-brand-dark/70">This is only the beginning.</p>
             </div>
           </motion.div>
         </div>
@@ -74,7 +73,6 @@ export default function About() {
             <p className="mt-2 text-brand-gold italic">
               Small batches. Remarkable flavour. Made to be shared.
             </p>
-            <p className="mt-2 text-brand-dark/70">This is only the beginning.</p>
           </div>
         </div>
 
