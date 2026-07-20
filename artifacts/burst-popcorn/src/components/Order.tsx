@@ -8,8 +8,8 @@ const FLAVORS = [
   { value: 'peanut-brittle', label: 'Peanut Brittle', available: false },
 ];
 
-const PRODUCT_PRICE = 5200;
-const DELIVERY_FEE = 3000;
+const PRODUCT_PRICE = 5500;
+const DELIVERY_FEE = 3500;
 
 const STATES = [
   { value: 'abuja', label: 'Abuja (FCT)', available: true },
