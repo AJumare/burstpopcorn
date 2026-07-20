@@ -8,7 +8,7 @@ const FLAVORS = [
   { value: 'peanut-brittle', label: 'Peanut Brittle', available: false },
 ];
 
-const PRODUCT_PRICE = 5500;
+const PRODUCT_PRICE = 5800;
 const DELIVERY_FEE = 3500;
 
 const STATES = [
