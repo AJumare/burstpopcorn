@@ -102,12 +102,12 @@ export default function Flavors() {
               <p className="font-serif text-brand-cream/70 text-lg italic mb-4 opacity-0 transition-opacity duration-500 group-hover:opacity-100 hidden md:block">
                 Crunchy. Buttery. Irresistible.
               </p>
-              <div className="inline-block bg-brand-mid text-brand-cream px-2 md:px-5 py-1 md:py-2 font-sans tracking-widest text-[9px] md:text-xs font-bold mb-2">
+              <div className="inline-block bg-brand-gold text-brand-dark px-2 md:px-5 py-1 md:py-2 font-sans tracking-widest text-[9px] md:text-xs font-bold mb-2">
                 PEANUT BRITTLE
               </div>
               <div className="block">
-                <span className="inline-block border border-brand-cream/40 text-brand-cream/70 font-sans tracking-widest text-[8px] md:text-[10px] px-2 py-0.5 uppercase">
-                  Coming Soon
+                <span className="inline-block border border-brand-gold/60 text-brand-gold font-sans tracking-widest text-[8px] md:text-[10px] px-2 py-0.5 uppercase">
+                  Available
                 </span>
               </div>
             </div>
