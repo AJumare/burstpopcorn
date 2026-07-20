@@ -3,12 +3,10 @@ import { motion } from 'framer-motion';
 import { ChevronDown } from 'lucide-react';
 
 const FLAVORS = [
-  { value: 'salted-caramel', label: 'Salted Caramel', available: true },
-  { value: 'caramel-cheese', label: 'Caramel & Cheese Mix', available: false },
-  { value: 'peanut-brittle', label: 'Peanut Brittle', available: false },
+  { value: 'salted-caramel', label: 'Salted Caramel', available: true, price: 5800 },
+  { value: 'caramel-cheese', label: 'Caramel & Cheese Mix', available: false, price: 5800 },
+  { value: 'peanut-brittle', label: 'Peanut Brittle', available: true, price: 6000 },
 ];
-
-const PRODUCT_PRICE = 5800;
 const DELIVERY_FEE = 3500;
 
 const STATES = [
@@ -33,7 +31,9 @@ export default function Order() {
 
   const selectedState = STATES.find(s => s.value === state);
   const deliveryAvailable = selectedState?.available ?? false;
-  const subtotal = PRODUCT_PRICE * quantity;
+  const selectedFlavorObj = FLAVORS.find(f => f.value === flavor);
+  const packPrice = selectedFlavorObj?.price ?? 5800;
+  const subtotal = packPrice * quantity;
   const total = deliveryAvailable ? subtotal + DELIVERY_FEE : subtotal;
 
   const validate = () => {
@@ -167,7 +167,7 @@ export default function Order() {
                 </div>
                 <button type="button" onClick={() => setQuantity(q => Math.min(20, q + 1))} disabled={quantity >= 20}
                   className="w-9 h-9 border border-brand-mid/50 text-brand-cream/70 hover:border-brand-gold hover:text-brand-gold disabled:opacity-30 disabled:cursor-not-allowed transition-colors flex items-center justify-center font-sans text-lg">+</button>
-                <span className="ml-3 font-sans text-brand-cream/40 text-xs tracking-wider">₦{PRODUCT_PRICE.toLocaleString()} / pack</span>
+                <span className="ml-3 font-sans text-brand-cream/40 text-xs tracking-wider">₦{packPrice.toLocaleString()} / pack</span>
               </div>
             </div>
 
