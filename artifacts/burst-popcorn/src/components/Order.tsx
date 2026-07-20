@@ -8,8 +8,8 @@ const FLAVORS = [
   { value: 'peanut-brittle', label: 'Peanut Brittle', available: false },
 ];
 
-const PRODUCT_PRICE = 6500;
-const DELIVERY_FEE = 4500;
+const PRODUCT_PRICE = 5200;
+const DELIVERY_FEE = 3000;
 
 const STATES = [
   { value: 'abuja', label: 'Abuja (FCT)', available: true },
@@ -218,6 +218,13 @@ export default function Order() {
                 className="bg-transparent border border-brand-mid/50 text-brand-cream font-sans text-sm px-3 py-2.5 placeholder:text-brand-cream/20 focus:outline-none focus:border-brand-gold transition-colors resize-none" />
               {errors.address && <span className="font-sans text-xs text-red-400">{errors.address}</span>}
             </div>
+
+            {/* Delivery schedule note */}
+            {deliveryAvailable && (
+              <p className="font-sans text-xs text-brand-gold/70 tracking-wide">
+                🗓 Deliveries are made on <span className="text-brand-gold font-semibold">Wednesdays</span> and <span className="text-brand-gold font-semibold">Saturdays</span>.
+              </p>
+            )}
 
             {/* Price summary */}
             <div className="border border-brand-mid/30 p-3 md:p-5 flex flex-col gap-2">
