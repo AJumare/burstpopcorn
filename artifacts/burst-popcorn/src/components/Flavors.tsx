@@ -31,13 +31,18 @@ export default function Flavors() {
                 alt="Salted Caramel Popcorn" 
                 className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-brand-dark via-brand-dark/30 to-transparent opacity-75 transition-opacity duration-500 group-hover:opacity-55" />
+              <div className="absolute inset-0 bg-gradient-to-t from-brand-dark via-brand-dark/30 to-transparent opacity-75 transition-opacity duration-500 group-hover:opacity-90" />
+            </div>
+
+            {/* Hover description — desktop only */}
+            <div className="absolute inset-0 z-10 hidden md:flex flex-col justify-center items-center px-8 translate-y-8 opacity-0 transition-all duration-500 group-hover:translate-y-0 group-hover:opacity-100 pointer-events-none">
+              <h3 className="font-serif text-brand-gold text-2xl mb-4">Salted Caramel</h3>
+              <p className="font-serif text-brand-cream/85 text-sm leading-relaxed text-center">
+                Rich, buttery caramel with a bold hit of salt in every bite. We don't hold back on the butter. Real Dairy Day butter and slow-cooked caramel, finished with a sprinkle of salt right when it's warm, so it clings to every piece. Sweet, salty, and completely addictive.
+              </p>
             </div>
             
-            <div className="relative z-10 text-center">
-              <p className="font-serif text-brand-cream/70 text-lg italic mb-4 opacity-0 transition-opacity duration-500 group-hover:opacity-100 hidden md:block">
-                Crafted in Small Batches · Rich Caramel Glaze
-              </p>
+            <div className="relative z-20 text-center">
               <div className="inline-block bg-brand-gold text-brand-dark px-2 md:px-5 py-1 md:py-2 font-sans tracking-widest text-[9px] md:text-xs font-bold mb-2">
                 SALTED CARAMEL
               </div>
