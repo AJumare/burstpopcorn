@@ -105,13 +105,22 @@ export default function Flavors() {
                 alt="Peanut Brittle Caramel Popcorn" 
                 className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-brand-dark via-brand-dark/30 to-transparent opacity-75 transition-opacity duration-500 group-hover:opacity-55" />
+              {/* Always-dark overlay on mobile, darkens further on desktop hover */}
+              <div className="absolute inset-0 bg-gradient-to-t from-brand-dark via-brand-dark/70 to-brand-dark/40 opacity-90 md:opacity-80 transition-opacity duration-500 md:group-hover:opacity-100" />
             </div>
-            
-            <div className="relative z-10 text-center">
-              <p className="font-serif text-brand-cream/70 text-lg italic mb-4 opacity-0 transition-opacity duration-500 group-hover:opacity-100 hidden md:block">
-                Crunchy. Buttery. Irresistible.
+
+            {/* Description: always visible on mobile, slides in on desktop hover */}
+            <div className="absolute inset-0 z-10 flex flex-col justify-center items-center px-6 md:px-8
+                            md:translate-y-8 md:opacity-0 md:transition-all md:duration-500
+                            md:group-hover:translate-y-0 md:group-hover:opacity-100
+                            pointer-events-none">
+              <h3 className="font-serif text-brand-gold text-2xl md:text-3xl mb-3 md:mb-5 drop-shadow-lg">Peanut Brittle</h3>
+              <p className="font-serif text-white text-sm md:text-base leading-relaxed text-center drop-shadow-lg font-medium">
+                Caramel corn infused with rich peanut butter, studded with real roasted peanuts for extra crunch. Sweet, nutty, and a little toasty. This one's for people who think popcorn should have some bite to it.
               </p>
+            </div>
+
+            <div className="relative z-20 text-center">
               <div className="inline-block bg-brand-gold text-brand-dark px-4 md:px-5 py-1 md:py-2 font-sans tracking-widest text-[10px] md:text-xs font-bold mb-2">
                 PEANUT BRITTLE
               </div>
