@@ -43,7 +43,7 @@ export default function Flavors() {
                             pointer-events-none">
               <h3 className="font-serif text-brand-gold text-2xl md:text-3xl mb-3 md:mb-5 drop-shadow-lg">Salted Caramel</h3>
               <p className="font-serif text-white text-sm md:text-base leading-relaxed text-center drop-shadow-lg font-medium">
-                Rich, buttery caramel with a bold hit of salt in every bite. We don't hold back on the butter. Real Dairy Day butter and slow-cooked caramel, finished with a sprinkle of salt right when it's warm, so it clings to every piece. Sweet, salty, and completely addictive.
+                Rich, buttery caramel with a bold hit of salt in every bite. We don't hold back on the butter. Real butter and slow-cooked caramel, finished with a sprinkle of salt right when it's warm, so it clings to every piece. Sweet, salty, and completely addictive.
               </p>
             </div>
 
