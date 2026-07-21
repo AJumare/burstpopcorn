@@ -31,13 +31,13 @@ export default function Flavors() {
                 alt="Salted Caramel Popcorn" 
                 className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-brand-dark via-brand-dark/30 to-transparent opacity-75 transition-opacity duration-500 group-hover:opacity-90" />
+              <div className="absolute inset-0 bg-gradient-to-t from-brand-dark via-brand-dark/60 to-brand-dark/30 opacity-80 transition-opacity duration-500 group-hover:opacity-100" />
             </div>
 
             {/* Hover description — desktop only */}
             <div className="absolute inset-0 z-10 hidden md:flex flex-col justify-center items-center px-8 translate-y-8 opacity-0 transition-all duration-500 group-hover:translate-y-0 group-hover:opacity-100 pointer-events-none">
-              <h3 className="font-serif text-brand-gold text-2xl mb-4">Salted Caramel</h3>
-              <p className="font-serif text-brand-cream/85 text-sm leading-relaxed text-center">
+              <h3 className="font-serif text-brand-gold text-3xl mb-5 drop-shadow-lg">Salted Caramel</h3>
+              <p className="font-serif text-white text-base leading-relaxed text-center drop-shadow-lg font-medium">
                 Rich, buttery caramel with a bold hit of salt in every bite. We don't hold back on the butter. Real Dairy Day butter and slow-cooked caramel, finished with a sprinkle of salt right when it's warm, so it clings to every piece. Sweet, salty, and completely addictive.
               </p>
             </div>
