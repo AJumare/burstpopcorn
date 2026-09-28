@@ -70,3 +70,52 @@ export const VerifyPaystackTransactionResponse = zod.object({
   "customerName": zod.string(),
   "totalNaira": zod.number()
 })
+
+
+/**
+ * @summary List confirmed Burst Popcorn Paystack orders for the shop admin
+ */
+export const listAdminOrdersQueryPageDefault = 1;
+export const listAdminOrdersQueryPageMax = 10000;
+
+
+
+export const ListAdminOrdersQueryParams = zod.object({
+  "page": zod.coerce.number().min(1).max(listAdminOrdersQueryPageMax).default(listAdminOrdersQueryPageDefault)
+})
+
+export const ListAdminOrdersResponse = zod.object({
+  "orders": zod.array(zod.object({
+  "reference": zod.string(),
+  "customerName": zod.string(),
+  "email": zod.string().nullable(),
+  "phone": zod.string(),
+  "address": zod.string(),
+  "state": zod.string(),
+  "items": zod.string(),
+  "totalNaira": zod.number(),
+  "paidAt": zod.string().nullable(),
+  "deliveredAt": zod.coerce.date().nullable()
+})),
+  "page": zod.number(),
+  "hasMore": zod.boolean()
+})
+
+
+/**
+ * @summary Mark a confirmed Burst Popcorn order delivered or undo delivery
+ */
+export const UpdateAdminOrderDeliveryParams = zod.object({
+  "reference": zod.coerce.string()
+})
+
+export const UpdateAdminOrderDeliveryBody = zod.object({
+  "delivered": zod.boolean()
+})
+
+export const UpdateAdminOrderDeliveryResponse = zod.object({
+  "reference": zod.string(),
+  "deliveredAt": zod.coerce.date().nullable()
+})
+
+

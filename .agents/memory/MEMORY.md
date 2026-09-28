@@ -1,0 +1,5 @@
+- [Nigeria checkout provider](nigeria-checkout-provider.md) — Burst Popcorn should use Paystack; the user explicitly rejected Shopify, Stripe, and Whop substitutes.
+- [Checkout publish order](checkout-publish-order.md) — Publish the Replit API before the Vercel storefront when checkout routes change, or buyers can hit stale endpoints.
+- [GitHub sync access](github-sync-access.md) — a connected GitHub account may work through its API proxy even when shell pushes have no credentials.
+- [Vercel project statuses](vercel-project-statuses.md) — several Vercel projects watch this repository; identify the customer-facing domain before treating one status as the storefront result.
+- [Vite React prebundles](vite-react-prebundles.md) — after pnpm React upgrades, the dev preview may serve stale React versions from Vite's cache.

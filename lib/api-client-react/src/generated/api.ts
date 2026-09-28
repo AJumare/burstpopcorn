@@ -20,8 +20,12 @@ import type {
 } from '@tanstack/react-query';
 
 import type {
+  AdminDeliveryStatus,
+  AdminDeliveryUpdate,
+  AdminOrderPage,
   ApiError,
   HealthStatus,
+  ListAdminOrdersParams,
   PaystackCheckoutInput,
   PaystackCheckoutSession,
   PaystackPaymentConfirmation
@@ -272,3 +276,165 @@ export function useVerifyPaystackTransaction<TData = Awaited<ReturnType<typeof v
 
   return withQueryKey(query, queryOptions.queryKey);
 }
+
+
+
+
+
+
+
+export const getListAdminOrdersUrl = (params?: ListAdminOrdersParams,) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : String(value))
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0 ? `/api/admin/orders?${stringifiedParams}` : `/api/admin/orders`
+}
+
+/**
+ * @summary List confirmed Burst Popcorn Paystack orders for the shop admin
+ */
+export const listAdminOrders = async (params?: ListAdminOrdersParams, options?: RequestInit): Promise<AdminOrderPage> => {
+
+  return customFetch<AdminOrderPage>(getListAdminOrdersUrl(params),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getListAdminOrdersQueryKey = (params?: ListAdminOrdersParams,) => {
+    return [
+    `/api/admin/orders`, ...(params ? [params] : [])
+    ] as const;
+    }
+
+
+export const getListAdminOrdersQueryOptions = <TData = Awaited<ReturnType<typeof listAdminOrders>>, TError = ErrorType<ApiError>>(params?: ListAdminOrdersParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listAdminOrders>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getListAdminOrdersQueryKey(params);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof listAdminOrders>>> = ({ signal }) => listAdminOrders(params, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof listAdminOrders>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type ListAdminOrdersQueryResult = NonNullable<Awaited<ReturnType<typeof listAdminOrders>>>
+export type ListAdminOrdersQueryError = ErrorType<ApiError>
+
+
+/**
+ * @summary List confirmed Burst Popcorn Paystack orders for the shop admin
+ */
+
+export function useListAdminOrders<TData = Awaited<ReturnType<typeof listAdminOrders>>, TError = ErrorType<ApiError>>(
+ params?: ListAdminOrdersParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listAdminOrders>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getListAdminOrdersQueryOptions(params,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getUpdateAdminOrderDeliveryUrl = (reference: string,) => {
+
+
+
+
+  return `/api/admin/orders/${reference}/delivery`
+}
+
+/**
+ * @summary Mark a confirmed Burst Popcorn order delivered or undo delivery
+ */
+export const updateAdminOrderDelivery = async (reference: string,
+    adminDeliveryUpdate: AdminDeliveryUpdate, options?: RequestInit): Promise<AdminDeliveryStatus> => {
+
+  return customFetch<AdminDeliveryStatus>(getUpdateAdminOrderDeliveryUrl(reference),
+  {
+    ...options,
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(adminDeliveryUpdate)
+  }
+);}
+
+
+
+
+export const getUpdateAdminOrderDeliveryMutationOptions = <TError = ErrorType<ApiError>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateAdminOrderDelivery>>, TError,{reference: string;data: BodyType<AdminDeliveryUpdate>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof updateAdminOrderDelivery>>, TError,{reference: string;data: BodyType<AdminDeliveryUpdate>}, TContext> => {
+
+const mutationKey = ['updateAdminOrderDelivery'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof updateAdminOrderDelivery>>, {reference: string;data: BodyType<AdminDeliveryUpdate>}> = (props) => {
+          const {reference,data} = props ?? {};
+
+          return  updateAdminOrderDelivery(reference,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type UpdateAdminOrderDeliveryMutationResult = NonNullable<Awaited<ReturnType<typeof updateAdminOrderDelivery>>>
+    export type UpdateAdminOrderDeliveryMutationBody = BodyType<AdminDeliveryUpdate>
+    export type UpdateAdminOrderDeliveryMutationError = ErrorType<ApiError>
+
+    /**
+ * @summary Mark a confirmed Burst Popcorn order delivered or undo delivery
+ */
+export const useUpdateAdminOrderDelivery = <TError = ErrorType<ApiError>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateAdminOrderDelivery>>, TError,{reference: string;data: BodyType<AdminDeliveryUpdate>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof updateAdminOrderDelivery>>,
+        TError,
+        {reference: string;data: BodyType<AdminDeliveryUpdate>},
+        TContext
+      > => {
+      return useMutation(getUpdateAdminOrderDeliveryMutationOptions(options));
+    }
+

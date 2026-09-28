@@ -12,6 +12,8 @@ tags:
     description: Health operations
   - name: payments
     description: Checkout and payment verification
+  - name: admin
+    description: Private shop management
 paths:
   /healthz:
     get:
@@ -106,6 +108,110 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ApiError"
+  /admin/orders:
+    get:
+      operationId: listAdminOrders
+      tags: [admin]
+      summary: List confirmed Burst Popcorn Paystack orders for the shop admin
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 10000
+            default: 1
+      responses:
+        "200":
+          description: Confirmed orders from a page of Paystack transactions
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AdminOrderPage"
+        "401":
+          description: Sign in required
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "403":
+          description: Not a shop admin
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "502":
+          description: Could not read Paystack transactions
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "503":
+          description: Paystack or admin access is not configured
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+  /admin/orders/{reference}/delivery:
+    patch:
+      operationId: updateAdminOrderDelivery
+      tags: [admin]
+      summary: Mark a confirmed Burst Popcorn order delivered or undo delivery
+      parameters:
+        - name: reference
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AdminDeliveryUpdate"
+      responses:
+        "200":
+          description: Updated delivery status
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AdminDeliveryStatus"
+        "400":
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "401":
+          description: Sign in required
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "403":
+          description: Not a shop admin
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "404":
+          description: Confirmed Burst order not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "502":
+          description: Could not verify payment
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "503":
+          description: Admin access or delivery storage is unavailable
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
 components:
   schemas:
     HealthStatus:
@@ -182,4 +288,56 @@ components:
           type: string
         totalNaira:
           type: integer
+    AdminOrder:
+      type: object
+      required: [reference, customerName, email, phone, address, state, items, totalNaira, paidAt, deliveredAt]
+      properties:
+        reference:
+          type: string
+        customerName:
+          type: string
+        email:
+          type: ["string", "null"]
+        phone:
+          type: string
+        address:
+          type: string
+        state:
+          type: string
+        items:
+          type: string
+        totalNaira:
+          type: integer
+        paidAt:
+          type: ["string", "null"]
+        deliveredAt:
+          type: ["string", "null"]
+          format: date-time
+    AdminDeliveryUpdate:
+      type: object
+      required: [delivered]
+      properties:
+        delivered:
+          type: boolean
+    AdminDeliveryStatus:
+      type: object
+      required: [reference, deliveredAt]
+      properties:
+        reference:
+          type: string
+        deliveredAt:
+          type: ["string", "null"]
+          format: date-time
+    AdminOrderPage:
+      type: object
+      required: [orders, page, hasMore]
+      properties:
+        orders:
+          type: array
+          items:
+            $ref: "#/components/schemas/AdminOrder"
+        page:
+          type: integer
+        hasMore:
+          type: boolean
 

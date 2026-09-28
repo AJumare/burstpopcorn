@@ -17,6 +17,9 @@ export class PaystackApiError extends Error {
 type PaystackEnvelope<T> = {
   status: boolean;
   data?: T;
+  meta?: {
+    pageCount?: number;
+  };
 };
 
 function getSecretKey(): string {
@@ -86,7 +89,28 @@ export type PaystackTransaction = {
   amount: number;
   currency: string;
   metadata: unknown;
+  paid_at?: string | null;
+  customer?: { email?: string | null };
 };
+
+export async function listPaystackTransactions(page: number) {
+  const response = await fetch(
+    `${PAYSTACK_API_URL}/transaction?status=success&perPage=40&page=${page}`,
+    {
+      headers: { Authorization: `Bearer ${getSecretKey()}` },
+      signal: AbortSignal.timeout(15000),
+    },
+  );
+  if (!response.ok) throw new PaystackApiError(response.status);
+  const result = await response.json() as PaystackEnvelope<PaystackTransaction[]>;
+  if (!result.status || !Array.isArray(result.data)) throw new PaystackApiError(response.status);
+  return {
+    transactions: result.data,
+    hasMore: typeof result.meta?.pageCount === 'number'
+      ? page < result.meta.pageCount
+      : result.data.length === 40,
+  };
+}
 
 export function initializePaystackTransaction(body: unknown) {
   return requestPaystack<{ authorization_url: string; reference: string }>(

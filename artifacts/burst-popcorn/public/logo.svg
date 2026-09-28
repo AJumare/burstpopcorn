@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" role="img" aria-label="Burst Popcorn Co.">
+  <circle cx="60" cy="60" r="58" fill="#D59A3D" stroke="#2B1F15" stroke-width="2"/>
+  <text x="60" y="70" font-family="Georgia,serif" font-size="65" font-weight="700" text-anchor="middle" fill="#2B1F15">B</text>
+  <text x="60" y="100" font-family="Arial,sans-serif" font-size="10" letter-spacing="3" font-weight="700" text-anchor="middle" fill="#2B1F15">BURST</text>
+</svg>

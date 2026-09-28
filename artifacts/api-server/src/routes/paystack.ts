@@ -57,7 +57,7 @@ function isAllowedCallbackPath(path: string): boolean {
   return configured.includes(path) || /^\/[a-z0-9-]+\/$/.test(path);
 }
 
-function verifiedOrderMetadata(metadata: unknown, reference: string): PaystackOrderProof | null {
+export function verifiedOrderMetadata(metadata: unknown, reference: string): PaystackOrderProof | null {
   if (!metadata || typeof metadata !== 'object') return null;
   const fields = metadata as Record<string, unknown>;
   if (

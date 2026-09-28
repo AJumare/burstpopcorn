@@ -74,3 +74,44 @@ export interface PaystackPaymentConfirmation {
   customerName: string;
   totalNaira: number;
 }
+
+export interface AdminOrder {
+  reference: string;
+  customerName: string;
+  /** @nullable */
+  email: string | null;
+  phone: string;
+  address: string;
+  state: string;
+  items: string;
+  totalNaira: number;
+  /** @nullable */
+  paidAt: string | null;
+  /** @nullable */
+  deliveredAt: string | null;
+}
+
+export interface AdminDeliveryUpdate {
+  delivered: boolean;
+}
+
+export interface AdminDeliveryStatus {
+  reference: string;
+  /** @nullable */
+  deliveredAt: string | null;
+}
+
+export interface AdminOrderPage {
+  orders: AdminOrder[];
+  page: number;
+  hasMore: boolean;
+}
+
+export type ListAdminOrdersParams = {
+/**
+ * @minimum 1
+ * @maximum 10000
+ */
+page?: number;
+};
+

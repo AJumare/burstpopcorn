@@ -6,8 +6,13 @@
  * OpenAPI spec version: 0.1.0
  */
 
+export * from './adminDeliveryStatus';
+export * from './adminDeliveryUpdate';
+export * from './adminOrder';
+export * from './adminOrderPage';
 export * from './apiError';
 export * from './healthStatus';
+export * from './listAdminOrdersParams';
 export * from './paystackCheckoutInput';
 export * from './paystackCheckoutInputState';
 export * from './paystackCheckoutSession';

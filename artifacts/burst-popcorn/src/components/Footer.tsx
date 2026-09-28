@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'wouter';
 
 export default function Footer() {
   const scrollTo = (e: React.MouseEvent<HTMLAnchorElement>, id: string) => {
@@ -46,6 +47,14 @@ export default function Footer() {
               <a href="mailto:hello@burstpopcorn.com" className="hover:text-brand-cream transition-colors w-fit">
                 hello@burstpopcorn.com
               </a>
+              <a
+                href="https://wa.me/2349025862461"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hover:text-brand-cream transition-colors w-fit"
+              >
+                WhatsApp: +2349025862461
+              </a>
               <a href="#" className="hover:text-brand-cream transition-colors w-fit">
                 Instagram @burstpopcornco
               </a>
@@ -63,6 +72,16 @@ export default function Footer() {
           <div className="flex gap-6 font-sans text-brand-cream/50 text-xs tracking-wider">
             <span className="cursor-pointer hover:text-brand-gold transition-colors">PRIVACY</span>
             <span className="cursor-pointer hover:text-brand-gold transition-colors">TERMS</span>
+            {import.meta.env.VITE_CLERK_PUBLISHABLE_KEY && (
+              <Link
+                to="/sign-in"
+                aria-label="Admin sign in"
+                data-testid="link-admin-sign-in"
+                className="hover:text-brand-gold transition-colors"
+              >
+                ADMIN
+              </Link>
+            )}
           </div>
         </div>
       </div>
