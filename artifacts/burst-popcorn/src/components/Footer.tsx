@@ -1,6 +1,9 @@
 import React from 'react';
 import { Link } from 'wouter';
 
+const adminSignInUrl = import.meta.env.VITE_ADMIN_SIGN_IN_URL || 'https://burst-popcorn-branding--ajumare.replit.app/sign-in';
+const adminLinkClass = 'font-semibold text-brand-gold hover:text-brand-cream transition-colors';
+
 export default function Footer() {
   const scrollTo = (e: React.MouseEvent<HTMLAnchorElement>, id: string) => {
     e.preventDefault();
@@ -77,10 +80,20 @@ export default function Footer() {
                 to="/sign-in"
                 aria-label="Admin sign in"
                 data-testid="link-admin-sign-in"
-                className="hover:text-brand-gold transition-colors"
+                className={adminLinkClass}
               >
                 ADMIN
               </Link>
+            )}
+            {!import.meta.env.VITE_CLERK_PUBLISHABLE_KEY && (
+              <a
+                href={adminSignInUrl}
+                aria-label="Admin sign in"
+                data-testid="link-admin-sign-in"
+                className={adminLinkClass}
+              >
+                ADMIN
+              </a>
             )}
           </div>
         </div>
