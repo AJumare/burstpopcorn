@@ -24,7 +24,7 @@ export default function Flavors() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-100px" }}
             transition={{ duration: 0.8, delay: 0.1 }}
-            className="group relative h-[420px] md:h-[600px] w-full rounded-sm overflow-hidden flex flex-col justify-end p-6 md:p-8 cursor-pointer"
+            className="group relative order-1 h-[420px] md:h-[600px] w-full rounded-sm overflow-hidden flex flex-col justify-end p-6 md:p-8 cursor-pointer"
           >
             <div className="absolute inset-0 z-0">
               <img 
@@ -64,8 +64,8 @@ export default function Flavors() {
             initial={{ opacity: 0, y: 40 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-100px" }}
-            transition={{ duration: 0.8, delay: 0.3 }}
-            className="group relative h-[420px] md:h-[600px] w-full rounded-sm overflow-hidden flex flex-col justify-end p-6 md:p-8 cursor-pointer"
+            transition={{ duration: 0.8, delay: 0.5 }}
+            className="group relative order-3 h-[420px] md:h-[600px] w-full rounded-sm overflow-hidden flex flex-col justify-end p-6 md:p-8 cursor-pointer"
           >
             <div className="absolute inset-0 z-0">
               <img 
@@ -89,12 +89,12 @@ export default function Flavors() {
             </div>
 
             <div className="relative z-20 text-center">
-              <div className="inline-block bg-brand-gold text-brand-dark px-4 md:px-5 py-1 md:py-2 font-sans tracking-widest text-[10px] md:text-xs font-bold mb-2">
+              <div className="inline-block bg-brand-mid text-brand-cream px-4 md:px-5 py-1 md:py-2 font-sans tracking-widest text-[10px] md:text-xs font-bold mb-2">
                 CARAMEL & CHEESE
               </div>
               <div className="block">
-                <span className="inline-block border border-brand-gold/60 text-brand-gold font-sans tracking-widest text-[9px] md:text-[10px] px-2 py-0.5 uppercase">
-                  Available
+                <span className="inline-block border border-brand-cream/40 text-brand-cream/70 font-sans tracking-widest text-[9px] md:text-[10px] px-2 py-0.5 uppercase">
+                  Coming Soon
                 </span>
               </div>
             </div>
@@ -105,8 +105,8 @@ export default function Flavors() {
             initial={{ opacity: 0, y: 40 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-100px" }}
-            transition={{ duration: 0.8, delay: 0.5 }}
-            className="group relative h-[420px] md:h-[600px] w-full rounded-sm overflow-hidden flex flex-col justify-end p-6 md:p-8 cursor-pointer"
+            transition={{ duration: 0.8, delay: 0.3 }}
+            className="group relative order-2 h-[420px] md:h-[600px] w-full rounded-sm overflow-hidden flex flex-col justify-end p-6 md:p-8 cursor-pointer"
           >
             <div className="absolute inset-0 z-0">
               <img 
@@ -130,12 +130,12 @@ export default function Flavors() {
             </div>
 
             <div className="relative z-20 text-center">
-              <div className="inline-block bg-brand-mid text-brand-cream px-4 md:px-5 py-1 md:py-2 font-sans tracking-widest text-[10px] md:text-xs font-bold mb-2">
+              <div className="inline-block bg-brand-gold text-brand-dark px-4 md:px-5 py-1 md:py-2 font-sans tracking-widest text-[10px] md:text-xs font-bold mb-2">
                 PEANUT BRITTLE
               </div>
               <div className="block">
-                <span className="inline-block border border-brand-cream/40 text-brand-cream/70 font-sans tracking-widest text-[9px] md:text-[10px] px-2 py-0.5 uppercase">
-                  Coming Soon
+                <span className="inline-block border border-brand-gold/60 text-brand-gold font-sans tracking-widest text-[9px] md:text-[10px] px-2 py-0.5 uppercase">
+                  Available
                 </span>
               </div>
             </div>
