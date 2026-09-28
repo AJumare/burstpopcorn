@@ -2,5 +2,11 @@
   "outputDirectory": "artifacts/burst-popcorn/dist/public",
   "buildCommand": "pnpm --filter @workspace/burst-popcorn run build",
   "installCommand": "pnpm install",
+  "rewrites": [
+    {
+      "source": "/api/:path*",
+      "destination": "https://burst-popcorn-branding--ajumare.replit.app/api/:path*"
+    }
+  ],
   "framework": null
 }

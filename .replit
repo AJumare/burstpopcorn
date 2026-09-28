@@ -23,3 +23,5 @@ timeoutMs = 20000
 
 [userenv.shared]
 WHOP_COMPANY_ID = "biz_6OTpSzrC5hHbfj"
+PAYSTACK_ALLOWED_ORIGINS = "https://burst-popcorn-branding--ajumare.replit.app"
+PAYSTACK_FALLBACK_CALLBACK_URL = "https://burst-popcorn-branding--ajumare.replit.app/"

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { ChevronDown } from 'lucide-react';
 
@@ -18,7 +18,8 @@ const STATES = [
   { value: 'other', label: 'Other State', available: false },
 ];
 
-const API_BASE = (import.meta.env.BASE_URL ?? '/').replace(/\/$/, '') + '/api';
+// The API is a separate artifact mounted at /api, even if this page has a base path.
+const API_BASE = '/api';
 
 type Quantities = Record<string, number>;
 
@@ -55,12 +56,53 @@ function QuantityStepper({
 }
 
 export default function Order() {
+  const urlParams = new URLSearchParams(window.location.search);
+  const paymentReference = urlParams.get('reference') ?? urlParams.get('trxref');
   const initialQtys: Quantities = Object.fromEntries(FLAVORS.map(f => [f.value, 0]));
   const [quantities, setQuantities] = useState<Quantities>(initialQtys);
   const [state, setState] = useState('abuja');
-  const [form, setForm] = useState({ name: '', phone: '', address: '' });
+  const [form, setForm] = useState({ name: '', email: '', phone: '', address: '' });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(false);
+  const [paymentStatus, setPaymentStatus] = useState<'idle' | 'verifying' | 'success' | 'failed'>(
+    paymentReference ? 'verifying' : 'idle'
+  );
+  const [paymentName, setPaymentName] = useState('');
+  const [paymentError, setPaymentError] = useState('');
+
+  useEffect(() => {
+    if (!paymentReference) return;
+    let active = true;
+
+    const verifyPayment = async () => {
+      try {
+        const response = await fetch(`${API_BASE}/paystack/verify/${encodeURIComponent(paymentReference)}`);
+        const result = await response.json();
+        if (!response.ok || result.verified !== true) {
+          throw new Error(result.error ?? 'Payment could not be confirmed.');
+        }
+        if (active) {
+          setPaymentName(result.customerName ?? '');
+          setPaymentStatus('success');
+        }
+      } catch (error) {
+        if (active) {
+          setPaymentError(error instanceof Error ? error.message : 'Payment could not be confirmed.');
+          setPaymentStatus('failed');
+        }
+      }
+    };
+    void verifyPayment();
+    return () => { active = false; };
+  }, [paymentReference]);
+
+  useEffect(() => {
+    if (paymentStatus === 'idle') return;
+    const frame = requestAnimationFrame(() => {
+      document.getElementById('order')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+    return () => cancelAnimationFrame(frame);
+  }, [paymentStatus]);
 
   const selectedState = STATES.find(s => s.value === state);
   const deliveryAvailable = selectedState?.available ?? false;
@@ -70,12 +112,18 @@ export default function Order() {
   const total = deliveryAvailable ? subtotal + DELIVERY_FEE : subtotal;
 
   const setQty = (flavor: string, val: number) =>
-    setQuantities(prev => ({ ...prev, [flavor]: val }));
+    setQuantities(prev => {
+      const otherPacks = Object.entries(prev).reduce(
+        (sum, [key, qty]) => sum + (key === flavor ? 0 : qty), 0
+      );
+      return { ...prev, [flavor]: Math.min(val, 20 - otherPacks) };
+    });
 
   const validate = () => {
     const e: Record<string, string> = {};
     if (totalPacks === 0) e.flavors = 'Please select at least one pack.';
     if (!form.name.trim()) e.name = 'Please enter your name.';
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email.trim())) e.email = 'Please enter a valid email address.';
     if (!form.phone.trim()) e.phone = 'Please enter your phone number.';
     if (!form.address.trim()) e.address = 'Please enter your delivery address.';
     if (!deliveryAvailable) e.state = 'Delivery is not yet available in your area.';
@@ -90,54 +138,75 @@ export default function Order() {
     setLoading(true);
 
     try {
-      const selectedFlavors = FLAVORS
+      const items = FLAVORS
         .filter(f => (quantities[f.value] ?? 0) > 0)
-        .map(f => `${quantities[f.value]}x ${f.label}`)
-        .join(', ');
+        .map(f => ({ flavor: f.value, quantity: quantities[f.value] }));
 
-      const res = await fetch(`${API_BASE}/whop/checkout`, {
+      const res = await fetch(`${API_BASE}/paystack/checkout`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          quantity: totalPacks,
-          flavor: selectedFlavors,
+          items,
           name: form.name,
+          email: form.email,
           phone: form.phone,
           address: form.address,
+          state,
+          callbackUrl: new URL(import.meta.env.BASE_URL ?? '/', window.location.origin).toString(),
         }),
       });
 
       const data = await res.json();
-      if (!res.ok || !data.purchase_url) throw new Error(data.error ?? 'Could not create checkout');
-      window.location.href = data.purchase_url;
+      if (!res.ok || !data.authorizationUrl) throw new Error(data.error ?? 'Could not create checkout');
+      window.location.href = data.authorizationUrl;
     } catch (err: any) {
       setErrors({ submit: err.message ?? 'Something went wrong. Please try again.' });
       setLoading(false);
     }
   };
 
-  // Success state
-  const urlParams = new URLSearchParams(window.location.search);
-  if (urlParams.get('order') === 'success') {
-    const customerName = urlParams.get('name') ?? '';
+  if (paymentStatus !== 'idle') {
     return (
       <section id="order" className="w-full bg-brand-dark py-24 px-6 md:px-12">
-        <div className="max-w-2xl mx-auto text-center">
+        <div className="max-w-2xl mx-auto text-center" role={paymentStatus === 'failed' ? 'alert' : 'status'}>
           <div className="w-16 h-16 rounded-full border-2 border-brand-gold mx-auto mb-8 flex items-center justify-center">
             <span className="text-brand-gold text-2xl">✦</span>
           </div>
           <h2 className="font-serif text-4xl text-brand-cream mb-4">
-            Thank you{customerName ? `, ${customerName.split(' ')[0]}` : ''}!
+            {paymentStatus === 'verifying' ? 'Confirming your payment…'
+              : paymentStatus === 'success' ? `Thank you${paymentName ? `, ${paymentName.split(' ')[0]}` : ''}!`
+              : 'Payment not confirmed'}
           </h2>
           <p className="font-serif text-brand-cream/60 text-xl italic mb-8">
-            Your order is confirmed. We'll be in touch to arrange delivery.
+            {paymentStatus === 'success'
+              ? "Your order is confirmed. We'll be in touch to arrange delivery."
+              : paymentStatus === 'failed'
+                ? paymentError
+                : 'Please wait while we check with Paystack.'}
           </p>
-          <button
-            onClick={() => window.location.href = window.location.pathname}
-            className="font-sans text-brand-gold tracking-widest text-xs uppercase border border-brand-gold/40 px-6 py-3 hover:border-brand-gold transition-colors"
-          >
-            Back to Home
-          </button>
+          {paymentStatus === 'failed' && paymentReference && (
+            <p className="font-sans text-brand-cream/40 text-xs mb-6">
+              If you were charged, keep this reference: {paymentReference}
+            </p>
+          )}
+          {paymentStatus !== 'verifying' && (
+            <div className="flex flex-wrap justify-center gap-3">
+              {paymentStatus === 'failed' && paymentReference && (
+                <button
+                  onClick={() => window.location.reload()}
+                  className="font-sans bg-brand-gold text-brand-dark tracking-widest text-xs uppercase px-6 py-3 hover:bg-[#c48a30] transition-colors"
+                >
+                  Check Payment Again
+                </button>
+              )}
+              <button
+                onClick={() => window.location.href = window.location.pathname + (paymentStatus === 'failed' ? '#order' : '')}
+                className="font-sans text-brand-gold tracking-widest text-xs uppercase border border-brand-gold/40 px-6 py-3 hover:border-brand-gold transition-colors"
+              >
+                {paymentStatus === 'success' ? 'Back to Home' : 'Back to Order'}
+              </button>
+            </div>
+          )}
         </div>
       </section>
     );
@@ -190,6 +259,7 @@ export default function Order() {
                     <QuantityStepper
                       value={quantities[f.value] ?? 0}
                       onChange={val => setQty(f.value, val)}
+                      max={20 - totalPacks + (quantities[f.value] ?? 0)}
                     />
                   ) : (
                     <span className="font-sans text-[10px] tracking-widest text-brand-cream/30 uppercase border border-brand-cream/20 px-2 py-0.5">
@@ -210,6 +280,15 @@ export default function Order() {
                 placeholder="Your name"
                 className="bg-transparent border border-brand-mid/50 text-brand-cream font-sans text-sm px-3 py-2.5 placeholder:text-brand-cream/20 focus:outline-none focus:border-brand-gold transition-colors" />
               {errors.name && <span className="font-sans text-xs text-red-400">{errors.name}</span>}
+            </div>
+
+            {/* Email required by Paystack */}
+            <div className="flex flex-col gap-1.5">
+              <label className="font-sans tracking-widest text-xs text-brand-cream/50 uppercase">Email Address</label>
+              <input type="email" autoComplete="email" value={form.email} onChange={e => { setForm(f => ({ ...f, email: e.target.value })); setErrors(prev => ({ ...prev, email: '' })); }}
+                placeholder="you@example.com"
+                className="bg-transparent border border-brand-mid/50 text-brand-cream font-sans text-sm px-3 py-2.5 placeholder:text-brand-cream/20 focus:outline-none focus:border-brand-gold transition-colors" />
+              {errors.email && <span className="font-sans text-xs text-red-400">{errors.email}</span>}
             </div>
 
             {/* Phone */}
@@ -294,7 +373,7 @@ export default function Order() {
                   </svg>
                   Preparing checkout…
                 </>
-              ) : 'Pay Now'}
+              ) : 'Pay securely with Paystack'}
             </button>
           </form>
         </motion.div>

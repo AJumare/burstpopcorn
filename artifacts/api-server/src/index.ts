@@ -28,7 +28,9 @@ if (!rawPort) throw new Error('PORT environment variable is required');
 const port = Number(rawPort);
 if (Number.isNaN(port) || port <= 0) throw new Error(`Invalid PORT: "${rawPort}"`);
 
-await initStripe();
+void initStripe().catch((err) => {
+  logger.error({ err }, 'Stripe sync unavailable; continuing to serve other API routes');
+});
 
 app.listen(port, (err) => {
   if (err) { logger.error({ err }, 'Error starting server'); process.exit(1); }
