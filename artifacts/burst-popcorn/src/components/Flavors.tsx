@@ -89,12 +89,12 @@ export default function Flavors() {
             </div>
 
             <div className="relative z-20 text-center">
-              <div className="inline-block bg-brand-mid text-brand-cream px-4 md:px-5 py-1 md:py-2 font-sans tracking-widest text-[10px] md:text-xs font-bold mb-2">
+              <div className="inline-block bg-brand-gold text-brand-dark px-4 md:px-5 py-1 md:py-2 font-sans tracking-widest text-[10px] md:text-xs font-bold mb-2">
                 CARAMEL & CHEESE
               </div>
               <div className="block">
-                <span className="inline-block border border-brand-cream/40 text-brand-cream/70 font-sans tracking-widest text-[9px] md:text-[10px] px-2 py-0.5 uppercase">
-                  Coming Soon
+                <span className="inline-block border border-brand-gold/60 text-brand-gold font-sans tracking-widest text-[9px] md:text-[10px] px-2 py-0.5 uppercase">
+                  Available
                 </span>
               </div>
             </div>
@@ -130,12 +130,12 @@ export default function Flavors() {
             </div>
 
             <div className="relative z-20 text-center">
-              <div className="inline-block bg-brand-gold text-brand-dark px-4 md:px-5 py-1 md:py-2 font-sans tracking-widest text-[10px] md:text-xs font-bold mb-2">
+              <div className="inline-block bg-brand-mid text-brand-cream px-4 md:px-5 py-1 md:py-2 font-sans tracking-widest text-[10px] md:text-xs font-bold mb-2">
                 PEANUT BRITTLE
               </div>
               <div className="block">
-                <span className="inline-block border border-brand-gold/60 text-brand-gold font-sans tracking-widest text-[9px] md:text-[10px] px-2 py-0.5 uppercase">
-                  Available
+                <span className="inline-block border border-brand-cream/40 text-brand-cream/70 font-sans tracking-widest text-[9px] md:text-[10px] px-2 py-0.5 uppercase">
+                  Coming Soon
                 </span>
               </div>
             </div>
