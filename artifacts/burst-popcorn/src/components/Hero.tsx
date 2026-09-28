@@ -38,9 +38,12 @@ export default function Hero() {
           initial="hidden"
           animate="show"
         >
-          <motion.div variants={item} className="inline-flex items-center gap-3 mb-6">
+          <motion.div variants={item} className="flex flex-col items-start gap-3 mb-6">
             <span className="font-sans tracking-widest text-brand-gold text-xs sm:text-sm font-semibold uppercase">
               Gourmet · Small Batch · Nigeria
+            </span>
+            <span className="inline-block border border-brand-gold/60 bg-brand-dark/30 px-3 py-1.5 font-sans tracking-widest text-brand-cream text-[10px] sm:text-xs font-semibold uppercase">
+              Made with real butter
             </span>
           </motion.div>
           
