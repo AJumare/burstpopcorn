@@ -7,8 +7,12 @@ import router from './routes';
 import { logger } from './lib/logger';
 import { WebhookHandlers } from './webhookHandlers';
 import { CLERK_PROXY_PATH, clerkProxyMiddleware, getClerkProxyHost } from './middlewares/clerkProxyMiddleware';
+import { paystackWebhook } from './routes/paystackWebhook';
 
 const app: Express = express();
+
+// Keep the original bytes for Paystack's HMAC-SHA512 signature verification.
+app.post('/api/paystack/webhook', express.raw({ type: 'application/json', limit: '64kb' }), paystackWebhook);
 
 // ── Stripe webhook MUST come before express.json() ──────────────────────────
 app.post(

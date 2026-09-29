@@ -11,10 +11,12 @@ import {
   PaystackApiError,
   PaystackConfigurationError,
   type PaystackOrderProof,
+  type PaystackTransaction,
   signPaystackOrder,
   verifyPaystackTransaction,
   verifyPaystackOrder,
 } from '../lib/paystack';
+import { sendPaidOrderConfirmation } from '../lib/orderConfirmation';
 
 const router: IRouter = Router();
 
@@ -83,6 +85,24 @@ export function verifiedOrderMetadata(metadata: unknown, reference: string): Pay
     items: fields.order_items,
   };
   return verifyPaystackOrder(order, fields.order_proof) ? order : null;
+}
+
+export function verifiedPaidOrder(transaction: PaystackTransaction, reference: string): PaystackOrderProof | null {
+  let metadata: unknown = transaction.metadata;
+  if (typeof metadata === 'string') {
+    try {
+      metadata = JSON.parse(metadata) as unknown;
+    } catch {
+      return null;
+    }
+  }
+  const order = verifiedOrderMetadata(metadata, reference);
+  return transaction.status === 'success'
+    && transaction.reference === reference
+    && transaction.currency === 'NGN'
+    && order
+    && transaction.amount === order.amountKobo
+    ? order : null;
 }
 
 function respondToPaystackError(req: { log: { error: (context: object, message: string) => void } }, res: {
@@ -199,6 +219,7 @@ router.post('/checkout', async (req, res): Promise<void> => {
       callback_url: returnUrl.toString(),
       metadata: {
         source: 'burst-popcorn',
+        confirmation_email: 'v1',
         amount_kobo: amountKobo,
         customer_name: name,
         phone,
@@ -240,26 +261,19 @@ router.get('/verify/:reference', async (req, res): Promise<void> => {
 
   try {
     const transaction = await verifyPaystackTransaction(parsed.data.reference);
-    let metadata: unknown = transaction.metadata;
-    if (typeof metadata === 'string') {
-      try {
-        metadata = JSON.parse(metadata) as unknown;
-      } catch {
-        metadata = null;
-      }
-    }
-    const order = verifiedOrderMetadata(metadata, parsed.data.reference);
-    if (
-      transaction.status !== 'success' ||
-      transaction.reference !== parsed.data.reference ||
-      transaction.currency !== 'NGN' ||
-      !order ||
-      transaction.amount !== order.amountKobo
-    ) {
+    const order = verifiedPaidOrder(transaction, parsed.data.reference);
+    if (!order) {
       res.status(409).json({ error: UNCONFIRMED_PAYMENT_MESSAGE });
       return;
     }
 
+    try {
+      const result = await sendPaidOrderConfirmation(transaction, order);
+      if (result === 'sent') req.log.info({ reference: order.reference }, 'Paid order confirmation sent');
+    } catch (error) {
+      // Email failure cannot undo a completed payment or change its success response.
+      req.log.error({ err: error, reference: order.reference }, 'Could not send paid order confirmation');
+    }
     res.json(VerifyPaystackTransactionResponse.parse({
       verified: true,
       customerName: order.customerName,
