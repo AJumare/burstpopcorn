@@ -21,11 +21,11 @@ export default function Hero() {
   return (
     <section className="relative h-[100dvh] w-full flex items-center justify-center overflow-hidden">
       {/* Background Image & Overlays */}
-      <div className="absolute inset-0 z-0">
-        <img 
-          src="/hero-brand.png" 
-          alt="Burst Popcorn Co. packaging" 
-          className="w-full h-full object-cover"
+      <div className="absolute inset-x-0 bottom-0 top-10 z-0">
+        <img
+          src="/original-pack-actual-sticker.png"
+          alt="Burst Popcorn Co. packaging"
+          className="w-full h-full object-cover object-top"
         />
         <div className="absolute inset-0 bg-gradient-to-r from-brand-dark/80 via-brand-dark/55 to-brand-dark/20" />
       </div>

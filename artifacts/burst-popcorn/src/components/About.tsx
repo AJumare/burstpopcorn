@@ -16,9 +16,9 @@ export default function About() {
             className="w-1/2 h-[800px] rounded-t-full rounded-b-sm overflow-hidden flex-shrink-0"
           >
             <img
-              src="/brand-packaging.png"
-              alt="Burst Popcorn Co. packaging"
-              className="w-full h-full object-cover object-center"
+              src="/original-pack-actual-sticker.png"
+              alt="Burst Popcorn Co. Salted Caramel packaging"
+              className="w-full h-full object-cover object-[35%_top]"
             />
           </motion.div>
 
@@ -55,9 +55,9 @@ export default function About() {
             {/* Float the image so text wraps beside and below it */}
             <div className="float-left mr-3 mb-2 w-28 h-40 rounded-t-full rounded-b-sm overflow-hidden flex-shrink-0">
               <img
-                src="/brand-packaging.png"
-                alt="Burst Popcorn Co. packaging"
-                className="w-full h-full object-cover object-center"
+                src="/original-pack-actual-sticker.png"
+                alt="Burst Popcorn Co. Salted Caramel packaging"
+                className="w-full h-full object-cover object-[35%_top]"
               />
             </div>
 
