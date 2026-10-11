@@ -1,3 +1,4 @@
+import { getDeliverySchedule } from '@workspace/delivery-schedule';
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { ChevronDown } from 'lucide-react';
@@ -62,6 +63,20 @@ export default function Order() {
   const [quantities, setQuantities] = useState<Quantities>(initialQtys);
   const [state, setState] = useState('abuja');
   const [form, setForm] = useState({ name: '', email: '', phone: '', address: '' });
+  const [scheduleTime, setScheduleTime] = useState(() => new Date());
+  const deliverySchedule = getDeliverySchedule(scheduleTime);
+  useEffect(() => {
+    const refresh = () => setScheduleTime(new Date());
+    const timer = window.setTimeout(refresh,
+      Math.max(0, new Date(deliverySchedule.cutoffAt).getTime() - Date.now()) + 50);
+    window.addEventListener('focus', refresh);
+    document.addEventListener('visibilitychange', refresh);
+    return () => {
+      window.clearTimeout(timer);
+      window.removeEventListener('focus', refresh);
+      document.removeEventListener('visibilitychange', refresh);
+    };
+  }, [deliverySchedule.cutoffAt]);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(false);
   const [paymentStatus, setPaymentStatus] = useState<'idle' | 'verifying' | 'success' | 'failed'>(
@@ -330,9 +345,17 @@ export default function Order() {
 
             {/* Delivery schedule note */}
             {deliveryAvailable && (
-              <p className="font-sans text-xs text-brand-gold/70 tracking-wide">
-                🗓 Deliveries are made on <span className="text-brand-gold font-semibold">Wednesdays</span> and <span className="text-brand-gold font-semibold">Saturdays</span>.
-              </p>
+              <div id="delivery-cutoffs" className="scroll-mt-24 border-2 border-brand-gold bg-brand-gold/10 p-4 md:p-5 font-sans" data-testid="delivery-cutoffs">
+                <h3 className="text-brand-gold font-semibold text-sm uppercase tracking-wider mb-3">Know your delivery day before you pay</h3>
+                <div className="space-y-2 text-brand-cream text-sm">
+                  <p><strong>Wednesday delivery:</strong> pay before <strong>Tuesday, 6pm</strong>.</p>
+                  <p><strong>Saturday delivery:</strong> pay before <strong>Friday, 6pm</strong>.</p>
+                </div>
+                <p className="text-brand-cream/75 text-xs mt-3 leading-relaxed">All cutoffs use Nigeria time (WAT). Payments at or after a cutoff move to the next delivery day.</p>
+                <div className="border-t border-brand-gold/40 mt-3 pt-3">
+                  <p className="text-brand-gold text-sm font-semibold">Pay now for delivery on {deliverySchedule.deliveryLabel}.</p>
+                </div>
+              </div>
             )}
 
             {/* Price summary */}

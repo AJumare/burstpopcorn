@@ -37,6 +37,9 @@ export default function Footer() {
               <a href="#order" onClick={(e) => scrollTo(e, '#order')} className="font-serif text-brand-gold text-xl hover:text-brand-cream transition-colors w-fit">
                 Order Now
               </a>
+              <a href="#bulk-orders" onClick={(e) => scrollTo(e, '#bulk-orders')} className="font-serif text-brand-gold text-xl hover:text-brand-cream transition-colors w-fit">
+                Bulk Orders &amp; Events
+              </a>
               <a href="#our-story" onClick={(e) => scrollTo(e, '#our-story')} className="font-serif text-brand-gold text-xl hover:text-brand-cream transition-colors w-fit">
                 Our Story
               </a>

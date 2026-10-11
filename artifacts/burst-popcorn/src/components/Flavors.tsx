@@ -43,7 +43,7 @@ export default function Flavors() {
                             pointer-events-none">
               <h3 className="font-serif text-brand-gold text-2xl md:text-3xl mb-3 md:mb-5 drop-shadow-lg">Salted Caramel</h3>
               <p className="font-serif text-white text-sm md:text-base leading-relaxed text-center drop-shadow-lg font-medium">
-                Rich, buttery caramel with a bold hit of salt in every bite. We don't hold back on the butter. Real butter and slow-cooked caramel, finished with a sprinkle of salt right when it's warm, so it clings to every piece. Sweet, salty, and completely addictive.
+                Available now. Rich, buttery caramel with a bold hit of salt in every bite. We don't hold back on the butter. Real butter and slow-cooked caramel, finished with a sprinkle of salt right when it's warm, so it clings to every piece. Sweet, salty, and completely addictive.
               </p>
             </div>
 
@@ -52,9 +52,12 @@ export default function Flavors() {
                 SALTED CARAMEL
               </div>
               <div className="block">
-                <span className="inline-block border border-brand-gold/60 text-brand-gold font-sans tracking-widest text-[9px] md:text-[10px] px-2 py-0.5 uppercase">
-                  Available
-                </span>
+                <a
+                  href="#order"
+                  className="inline-block bg-brand-gold text-brand-dark font-sans tracking-widest text-[10px] px-4 py-2 uppercase font-bold transition-transform duration-300 hover:scale-105 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-gold"
+                >
+                  Order Now
+                </a>
               </div>
             </div>
           </motion.div>
@@ -125,7 +128,7 @@ export default function Flavors() {
                             pointer-events-none">
               <h3 className="font-serif text-brand-gold text-2xl md:text-3xl mb-3 md:mb-5 drop-shadow-lg">Peanut Brittle</h3>
               <p className="font-serif text-white text-sm md:text-base leading-relaxed text-center drop-shadow-lg font-medium">
-                Caramel corn infused with rich peanut butter, studded with real roasted peanuts for extra crunch. Sweet, nutty, and a little toasty. This one's for people who think popcorn should have some bite to it.
+                Available now. Caramel corn infused with rich peanut butter, studded with real roasted peanuts for extra crunch. Sweet, nutty, and a little toasty. This one's for people who think popcorn should have some bite to it.
               </p>
             </div>
 
@@ -134,9 +137,12 @@ export default function Flavors() {
                 PEANUT BRITTLE
               </div>
               <div className="block">
-                <span className="inline-block border border-brand-gold/60 text-brand-gold font-sans tracking-widest text-[9px] md:text-[10px] px-2 py-0.5 uppercase">
-                  Available
-                </span>
+                <a
+                  href="#order"
+                  className="inline-block bg-brand-gold text-brand-dark font-sans tracking-widest text-[10px] px-4 py-2 uppercase font-bold transition-transform duration-300 hover:scale-105 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-gold"
+                >
+                  Order Now
+                </a>
               </div>
             </div>
           </motion.div>

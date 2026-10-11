@@ -4,6 +4,7 @@ import Hero from '@/components/Hero';
 import Flavors from '@/components/Flavors';
 import Marquee from '@/components/Marquee';
 import Order from '@/components/Order';
+import BulkOrders from '@/components/BulkOrders';
 import About from '@/components/About';
 import Footer from '@/components/Footer';
 
@@ -16,6 +17,7 @@ export default function Home() {
         <Hero />
         <Marquee />
         <Flavors />
+        <BulkOrders />
         <Order />
         <Marquee />
         <About />

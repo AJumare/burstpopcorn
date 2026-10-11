@@ -239,6 +239,10 @@ importers:
         version: 3.1.0
 
   artifacts/burst-popcorn:
+    dependencies:
+      '@workspace/delivery-schedule':
+        specifier: workspace:*
+        version: link:../../lib/delivery-schedule
     devDependencies:
       '@clerk/react':
         specifier: ^6.17.2
@@ -636,6 +640,8 @@ importers:
       zod:
         specifier: 'catalog:'
         version: 3.25.76
+
+  lib/delivery-schedule: {}
 
   lib/db:
     dependencies:
