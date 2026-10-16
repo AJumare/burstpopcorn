@@ -10,12 +10,15 @@ import {
   Copy,
   LockKeyhole,
   LogOut,
+  Plus,
+  Send,
   PackageOpen,
   RefreshCw,
   ShieldCheck,
 } from 'lucide-react';
-import { getListAdminOrdersQueryKey, useListAdminOrders, useUpdateAdminOrderDelivery } from '@workspace/api-client-react';
-import type { AdminOrder, AdminOrderPage } from '@workspace/api-client-react';
+import { getListAdminOrdersQueryKey, useListAdminOrders, useSendManualOrderConfirmation, useUpdateAdminOrderDelivery } from '@workspace/api-client-react';
+import type { AdminOrder, AdminOrderPage, ManualOrderResult } from '@workspace/api-client-react';
+import { ManualOrderDialog, MarkPaidDialog, PAYMENT_METHOD_LABEL, failureMessage } from './admin-manual-orders';
 import './admin-orders.css';
 
 const naira = new Intl.NumberFormat('en-NG', {
@@ -45,6 +48,35 @@ function paidTime(value: string | null) {
   return { date: lagosDate.format(date), time: `${lagosTime.format(date)} WAT` };
 }
 
+const lagosDay = new Intl.DateTimeFormat('en-NG', { timeZone: 'UTC', weekday: 'long', day: 'numeric', month: 'short' });
+
+function deliveryDay(value?: string | null) {
+  if (!value || !/^\d{4}-\d{2}-\d{2}$/.test(value)) return null;
+  const d = new Date(`${value}T00:00:00Z`);
+  return Number.isNaN(d.getTime()) ? null : lagosDay.format(d);
+}
+
+const EMAIL_LABEL: Record<string, string> = {
+  sent: 'Confirmation sent',
+  'already-sent': 'Confirmation sent',
+  'in-progress': 'Sending confirmation',
+  failed: 'Confirmation failed',
+  'not-requested': 'No confirmation sent',
+};
+
+function canSendConfirmation(order: AdminOrder) {
+  const s = order.confirmationStatus;
+  return order.paymentStatus === 'paid' && s !== 'sent' && s !== 'already-sent' && s !== 'in-progress';
+}
+
+export type RowActions = {
+  onMarkPaid: (order: AdminOrder) => void;
+  onSendConfirmation: (reference: string) => void;
+  sendPending: string | null;
+  sendBusy: boolean;
+  sendError?: { reference: string; message: string } | null;
+};
+
 function errorStatus(error: unknown): number | undefined {
   if (!error || typeof error !== 'object') return undefined;
   const candidate = error as {
@@ -59,17 +91,24 @@ function OrderRow({
   order,
   index,
   onDeliveryChange,
+  deliveryTrackingAvailable,
   deliveryDisabled,
   deliveryPending,
   deliveryError,
+  actions,
 }: {
   order: AdminOrder;
   index: number;
   onDeliveryChange: (reference: string, delivered: boolean) => void;
+  deliveryTrackingAvailable: boolean;
   deliveryDisabled: boolean;
   deliveryPending: boolean;
   deliveryError?: string;
+  actions: RowActions;
 }) {
+  const manual = order.source === 'manual';
+  const unpaid = order.paymentStatus === 'pending';
+  const day = deliveryDay(order.deliveryDate);
   const [copied, setCopied] = useState(false);
   const paid = paidTime(order.paidAt);
 
@@ -103,6 +142,12 @@ function OrderRow({
           </button>
         </div>
         <p className="orders-items" data-testid={`text-items-${index}`}>{order.items}</p>
+        {manual && (
+          <div className="orders-tags">
+            <span className="orders-tag" data-testid={`badge-manual-${index}`}>Manual</span>
+            {order.paymentMethod && <span className="orders-tag orders-tag-soft" data-testid={`text-method-${index}`}>{PAYMENT_METHOD_LABEL[order.paymentMethod] ?? order.paymentMethod}</span>}
+          </div>
+        )}
       </div>
 
       <div className="orders-cell orders-cell-customer">
@@ -124,29 +169,66 @@ function OrderRow({
         <span className="orders-mobile-label">Delivery address</span>
         <p className="orders-address" data-testid={`text-address-${index}`}>{order.address}</p>
         <span className="orders-region" data-testid={`text-state-${index}`}>{order.state}</span>
+        {day && <span className="orders-delivery-day" data-testid={`text-delivery-day-${index}`}>Delivery {day}</span>}
       </div>
 
       <div className="orders-cell orders-cell-payment">
         <span className="orders-mobile-label">Payment</span>
         <strong className="orders-amount" data-testid={`text-total-${index}`}>{naira.format(order.totalNaira)}</strong>
-        <span className="orders-paid" data-testid={`text-paid-at-${index}`}>{paid.date}</span>
-        {paid.time && <span className="orders-paid-time">{paid.time}</span>}
+        {unpaid ? (
+          <>
+            <span className="orders-pay-status is-pending" data-testid={`status-payment-${index}`}>Awaiting payment</span>
+            <button type="button" className="orders-mini-button" onClick={() => actions.onMarkPaid(order)} data-testid={`button-mark-paid-${index}`}>Mark paid</button>
+          </>
+        ) : (
+          <>
+            <span className="orders-paid" data-testid={`text-paid-at-${index}`}>{paid.date}</span>
+            {paid.time && <span className="orders-paid-time">{paid.time}</span>}
+          </>
+        )}
+        {manual && !unpaid && (
+          <span className={`orders-email-status is-${order.confirmationStatus ?? 'not-requested'}`} data-testid={`status-email-${index}`}>
+            {EMAIL_LABEL[order.confirmationStatus ?? 'not-requested'] ?? order.confirmationStatus}
+          </span>
+        )}
+        {manual && canSendConfirmation(order) && (
+          <button
+            type="button"
+            className="orders-mini-button"
+            onClick={() => actions.onSendConfirmation(order.reference)}
+            disabled={actions.sendBusy}
+            data-testid={`button-send-confirmation-${index}`}
+          >
+            <Send size={12} /> {actions.sendPending === order.reference ? 'Sending...' : order.confirmationStatus === 'failed' ? 'Retry email' : 'Send email'}
+          </button>
+        )}
+        {actions.sendError?.reference === order.reference && <span className="orders-delivery-error" role="alert">{actions.sendError.message}</span>}
       </div>
 
       <div className="orders-cell orders-cell-status">
         <span className="orders-mobile-label">Delivery status</span>
-        <label className={`orders-delivery-control${order.deliveredAt ? ' is-delivered' : ''}`}>
-          <input
-            type="checkbox"
-            checked={Boolean(order.deliveredAt)}
-            disabled={deliveryDisabled}
-            onChange={(event) => onDeliveryChange(order.reference, event.target.checked)}
-            aria-label={`${order.deliveredAt ? 'Undo delivered status for' : 'Mark delivered'} ${order.reference}`}
-            data-testid={`checkbox-delivered-${index}`}
-          />
-          <span>{deliveryPending ? 'Saving…' : order.deliveredAt ? 'Delivered' : 'Mark delivered'}</span>
-        </label>
-        {order.deliveredAt && <span className="orders-delivery-date">{paidTime(order.deliveredAt).date}</span>}
+        {unpaid ? (
+          <span className="orders-delivery-unavailable" data-testid={`status-delivery-unpaid-${index}`}>Available once paid</span>
+        ) : deliveryTrackingAvailable ? (
+          <>
+            <label className={`orders-delivery-control${order.deliveredAt ? ' is-delivered' : ''}`}>
+              <input
+                type="checkbox"
+                checked={Boolean(order.deliveredAt)}
+                disabled={deliveryDisabled}
+                onChange={(event) => onDeliveryChange(order.reference, event.target.checked)}
+                aria-label={`${order.deliveredAt ? 'Undo delivered status for' : 'Mark delivered'} ${order.reference}`}
+                data-testid={`checkbox-delivered-${index}`}
+              />
+              <span>{deliveryPending ? 'Saving…' : order.deliveredAt ? 'Delivered' : 'Mark delivered'}</span>
+            </label>
+            {order.deliveredAt && <span className="orders-delivery-date">{paidTime(order.deliveredAt).date}</span>}
+          </>
+        ) : (
+          <span className="orders-delivery-unavailable" data-testid={`status-delivery-unavailable-${index}`}>
+            Status unavailable
+          </span>
+        )}
         {deliveryError && <span className="orders-delivery-error" role="alert" data-testid={`status-delivery-error-${index}`}>{deliveryError}</span>}
       </div>
     </article>
@@ -155,8 +237,8 @@ function OrderRow({
 
 function LoadingRows() {
   return (
-    <div className="orders-loading" role="status" aria-label="Loading paid orders" data-testid="status-orders-loading">
-      <span className="orders-sr-only">Loading paid orders…</span>
+    <div className="orders-loading" role="status" aria-label="Loading orders" data-testid="status-orders-loading">
+      <span className="orders-sr-only">Loading orders…</span>
       {[0, 1, 2, 3, 4].map((index) => (
         <div className="orders-skeleton-row" key={index}>
           <div><i className="orders-skeleton sk-short" /><i className="orders-skeleton sk-long" /></div>
@@ -214,14 +296,20 @@ function Pagination({
 }
 
 export default function AdminOrders() {
-  const [page, setPage] = useState(1);
+  const [source, setSource] = useState<'website' | 'manual'>('website');
+  const [pages, setPages] = useState({ website: 1, manual: 1 });
+  const page = pages[source];
+  const [creating, setCreating] = useState(false);
+  const [markingPaid, setMarkingPaid] = useState<AdminOrder | null>(null);
+  const [notice, setNotice] = useState<{ tone: 'ok' | 'warn'; text: string } | null>(null);
+  const [sendError, setSendError] = useState<{ reference: string; message: string } | null>(null);
   const [deliveryError, setDeliveryError] = useState<{ reference: string; message: string } | null>(null);
   const { signOut } = useClerk();
   const { userId } = useAuth();
   const queryClient = useQueryClient();
   const { data, isLoading, isFetching, isError, error, refetch } = useListAdminOrders(
-    { page },
-    { query: { queryKey: [...getListAdminOrdersQueryKey({ page }), userId], retry: (count, failure) => errorStatus(failure) !== 403 && count < 2, staleTime: 30_000 } },
+    { page, source },
+    { query: { queryKey: [...getListAdminOrdersQueryKey({ page, source }), userId], retry: (count, failure) => errorStatus(failure) !== 403 && count < 2, staleTime: 30_000, refetchInterval: 30_000 } },
   );
   const forbidden = isError && errorStatus(error) === 403;
   const updateDelivery = useUpdateAdminOrderDelivery({
@@ -252,13 +340,59 @@ export default function AdminOrders() {
     },
   });
 
+  const userListPredicate = {
+    predicate: (query: { queryKey: readonly unknown[] }) => query.queryKey[0] === getListAdminOrdersQueryKey()[0]
+      && query.queryKey[query.queryKey.length - 1] === userId,
+  };
+
+  function refreshLists() {
+    void queryClient.invalidateQueries(userListPredicate);
+  }
+
+  function reportResult(result: ManualOrderResult, verb: string) {
+    const ref = result.order.reference;
+    if (result.emailStatus === 'failed') {
+      setNotice({ tone: 'warn', text: `${verb} ${ref}, but the confirmation email failed${result.emailError ? `: ${result.emailError}` : ''}. Use Retry email on the order.` });
+    } else if (result.emailStatus === 'in-progress') {
+      setNotice({ tone: 'warn', text: `${verb} ${ref}. The confirmation is still sending; the list will update shortly.` });
+    } else if (result.emailStatus === 'sent' || result.emailStatus === 'already-sent') {
+      setNotice({ tone: 'ok', text: `${verb} ${ref} and the confirmation is with the customer.` });
+    } else {
+      setNotice({ tone: 'ok', text: `${verb} ${ref}. No email was sent.` });
+    }
+  }
+
+  const sendConfirmation = useSendManualOrderConfirmation({
+    mutation: {
+      onSuccess: (result) => { setSendError(null); reportResult(result, 'Order'); refreshLists(); },
+      onError: (failure, variables) => setSendError({ reference: variables.reference, message: failureMessage(failure, 'Could not send. Please try again.') }),
+    },
+  });
+
+  const rowActions: RowActions = {
+    onMarkPaid: (order) => setMarkingPaid(order),
+    onSendConfirmation: (reference) => {
+      if (sendConfirmation.isPending) return;
+      setSendError(null);
+      sendConfirmation.mutate({ reference });
+    },
+    sendPending: sendConfirmation.isPending ? sendConfirmation.variables?.reference ?? null : null,
+    sendBusy: sendConfirmation.isPending,
+    sendError,
+  };
+
+  function switchSource(next: 'website' | 'manual') {
+    setSource(next);
+    setDeliveryError(null);
+  }
+
   function changeDelivery(reference: string, delivered: boolean) {
     setDeliveryError(null);
     updateDelivery.mutate({ reference, data: { delivered } });
   }
 
   function changePage(nextPage: number) {
-    setPage(nextPage);
+    setPages((p) => ({ ...p, [source]: nextPage }));
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
@@ -295,13 +429,13 @@ export default function AdminOrders() {
           <div className="orders-intro-main">
             <div className="orders-eyebrow"><span className="orders-eyebrow-line" /> THE PRIVATE COUNTER <span className="orders-eyebrow-line" /></div>
             <h1>Every order,<br /><em>in good hands.</em></h1>
-            <p>Paid orders and delivery details, all in one place.</p>
+            <p>Website, WhatsApp, transfer and event orders, all in one place.</p>
           </div>
           <div className="orders-intro-aside">
             <span className="orders-aside-icon"><ShieldCheck size={22} strokeWidth={1.5} /></span>
             <div>
-              <strong>Confirmed payments only</strong>
-              <span>Orders appear here after Paystack confirms payment.</span>
+              <strong>Payments, clearly marked</strong>
+              <span>Website orders appear after Paystack confirms payment. Manual orders show as pending until you record the payment.</span>
             </div>
           </div>
         </div>
@@ -310,9 +444,13 @@ export default function AdminOrders() {
           <div className="orders-panel-heading">
             <div>
               <div className="orders-panel-kicker"><span className="orders-live-dot" /> LIVE ORDER LIST</div>
-              <h2 id="orders-list-title">Paid orders <span className="orders-heading-count" data-testid="text-orders-count">{data && !isError ? data.orders.length : '—'}</span></h2>
-              <p>Newest confirmed payments first. Times shown in West Africa Time.</p>
+              <h2 id="orders-list-title">{source === 'website' ? 'Website orders' : 'Manual orders'} <span className="orders-heading-count" data-testid="text-orders-count">{data && !isError ? data.orders.length : '—'}</span></h2>
+              <p>{source === 'website' ? 'Newest confirmed payments first.' : 'Newest recorded first.'} Times shown in West Africa Time.</p>
             </div>
+            <div className="orders-heading-actions">
+            <button type="button" className="orders-new" onClick={() => { setNotice(null); setCreating(true); }} data-testid="button-new-manual-order">
+              <Plus size={16} /> <span>Record order</span>
+            </button>
             <button
               type="button"
               className="orders-refresh"
@@ -324,7 +462,38 @@ export default function AdminOrders() {
               <RefreshCw size={16} strokeWidth={1.8} className={isFetching ? 'orders-refreshing-icon' : ''} />
               <span>{isFetching && !isLoading ? 'Refreshing' : 'Refresh list'}</span>
             </button>
+            </div>
           </div>
+
+          <div className="orders-tabs" role="tablist" aria-label="Order source">
+            {(['website', 'manual'] as const).map((s) => (
+              <button
+                key={s}
+                type="button"
+                role="tab"
+                aria-selected={source === s}
+                className={source === s ? 'is-active' : ''}
+                onClick={() => switchSource(s)}
+                data-testid={`tab-${s}-orders`}
+              >
+                {s === 'website' ? 'Website' : 'Manual'}
+              </button>
+            ))}
+          </div>
+
+          {notice && (
+            <div className={`orders-notice is-${notice.tone}`} role="status" data-testid="status-manual-notice">
+              <span>{notice.text}</span>
+              <button type="button" onClick={() => setNotice(null)} aria-label="Dismiss" data-testid="button-dismiss-notice">Dismiss</button>
+            </div>
+          )}
+
+          {data && !data.deliveryTrackingAvailable && (
+            <div className="orders-delivery-warning" role="status" data-testid="status-delivery-tracking-unavailable">
+              <strong>Delivery tracking is unavailable.</strong>
+              <span>Paid orders are still shown, but delivery statuses can’t be verified or updated until database access is restored.</span>
+            </div>
+          )}
 
           {isError ? (
             <div className="orders-state" role="alert" data-testid={forbidden ? 'status-orders-forbidden' : 'status-orders-error'}>
@@ -343,7 +512,7 @@ export default function AdminOrders() {
                 <div className="orders-state-icon"><PackageOpen size={30} strokeWidth={1.35} /></div>
                 <span className="orders-state-kicker">ALL CLEAR</span>
                 <h3>No Burst orders on this page.</h3>
-                <p>{data.hasMore ? 'There may be older orders on the next page.' : page === 1 ? 'When a customer completes payment, their order and delivery details will show up here.' : 'Check the previous page for more orders.'}</p>
+                <p>{data.hasMore ? 'There may be older orders on the next page.' : page === 1 ? (source === 'manual' ? 'Record a WhatsApp, transfer or event order and it will be kept here.' : 'When a customer completes payment, their order and delivery details will show up here.') : 'Check the previous page for more orders.'}</p>
               </div>
               <Pagination data={data} page={page} onPageChange={changePage} disabled={isFetching} />
             </>
@@ -351,7 +520,7 @@ export default function AdminOrders() {
             <>
               <div className="orders-table" data-testid="list-paid-orders">
                 <div className="orders-table-head" aria-hidden="true">
-                  <span>ORDER / ITEMS</span><span>CUSTOMER</span><span>DELIVERY TO</span><span>PAID</span><span>DELIVERED</span>
+                  <span>ORDER / ITEMS</span><span>CUSTOMER</span><span>DELIVERY TO</span><span>PAYMENT</span><span>DELIVERED</span>
                 </div>
                 <div className="orders-table-body">
                   {data.orders.map((order, index) => (
@@ -360,9 +529,11 @@ export default function AdminOrders() {
                       order={order}
                       index={index}
                       onDeliveryChange={changeDelivery}
+                      deliveryTrackingAvailable={data.deliveryTrackingAvailable}
                       deliveryDisabled={updateDelivery.isPending}
                       deliveryPending={updateDelivery.isPending && updateDelivery.variables?.reference === order.reference}
                       deliveryError={deliveryError?.reference === order.reference ? deliveryError.message : undefined}
+                      actions={rowActions}
                     />
                   ))}
                 </div>
@@ -371,6 +542,26 @@ export default function AdminOrders() {
             </>
           )}
         </section>
+
+        {creating && (
+          <ManualOrderDialog
+            onClose={() => setCreating(false)}
+            onSaved={(result) => {
+              setCreating(false);
+              reportResult(result, 'Saved');
+              setSource('manual');
+              setPages((p) => ({ ...p, manual: 1 }));
+              refreshLists();
+            }}
+          />
+        )}
+        {markingPaid && (
+          <MarkPaidDialog
+            order={markingPaid}
+            onClose={() => setMarkingPaid(null)}
+            onSaved={(result) => { setMarkingPaid(null); reportResult(result, 'Marked paid'); refreshLists(); }}
+          />
+        )}
 
         <footer className="orders-footer">
           <span><span className="orders-footer-mark">burst.</span> / The good stuff, on its way.</span>

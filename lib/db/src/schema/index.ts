@@ -19,3 +19,4 @@
 
 export * from "./adminOrderDelivery";
 export * from "./orderConfirmation";
+export * from "./manualOrder";

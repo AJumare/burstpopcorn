@@ -75,17 +75,26 @@ export const VerifyPaystackTransactionResponse = zod.object({
 /**
  * @summary List confirmed Burst Popcorn Paystack orders for the shop admin
  */
+export const listAdminOrdersQuerySourceDefault = `website`;
 export const listAdminOrdersQueryPageDefault = 1;
 export const listAdminOrdersQueryPageMax = 10000;
 
 
 
 export const ListAdminOrdersQueryParams = zod.object({
+  "source": zod.enum(['website', 'manual']).default(listAdminOrdersQuerySourceDefault),
   "page": zod.coerce.number().int().min(1).max(listAdminOrdersQueryPageMax).default(listAdminOrdersQueryPageDefault)
 })
 
 export const ListAdminOrdersResponse = zod.object({
   "orders": zod.array(zod.object({
+  "source": zod.enum(['website', 'manual']).optional(),
+  "paymentStatus": zod.enum(['pending', 'paid']).optional(),
+  "paymentMethod": zod.string().nullish(),
+  "deliveryDate": zod.string().nullish(),
+  "deliveryDateOverridden": zod.boolean().optional(),
+  "confirmationStatus": zod.string().nullish(),
+  "createdAt": zod.string().nullish(),
   "reference": zod.string(),
   "customerName": zod.string(),
   "email": zod.string().nullable(),
@@ -98,7 +107,147 @@ export const ListAdminOrdersResponse = zod.object({
   "deliveredAt": zod.coerce.date().nullable()
 })),
   "page": zod.number().int(),
-  "hasMore": zod.boolean()
+  "hasMore": zod.boolean(),
+  "deliveryTrackingAvailable": zod.boolean()
+})
+
+
+/**
+ * @summary Record an outside order without charging the customer
+ */
+export const createManualOrderBodyCustomerNameMin = 2;
+export const createManualOrderBodyCustomerNameMax = 120;
+
+export const createManualOrderBodyEmailMax = 254;
+
+export const createManualOrderBodyPhoneMin = 7;
+export const createManualOrderBodyPhoneMax = 30;
+
+export const createManualOrderBodyAddressMin = 5;
+export const createManualOrderBodyAddressMax = 1000;
+
+export const createManualOrderBodyStateMin = 2;
+export const createManualOrderBodyStateMax = 100;
+
+export const createManualOrderBodyLineItemsItemQuantityMax = 10000;
+
+export const createManualOrderBodyLineItemsMax = 2;
+
+export const createManualOrderBodyTotalNairaMax = 100000000;
+
+
+
+export const CreateManualOrderBody = zod.object({
+  "requestId": zod.string().uuid(),
+  "customerName": zod.string().min(createManualOrderBodyCustomerNameMin).max(createManualOrderBodyCustomerNameMax),
+  "email": zod.string().email().max(createManualOrderBodyEmailMax),
+  "phone": zod.string().min(createManualOrderBodyPhoneMin).max(createManualOrderBodyPhoneMax),
+  "address": zod.string().min(createManualOrderBodyAddressMin).max(createManualOrderBodyAddressMax),
+  "state": zod.string().min(createManualOrderBodyStateMin).max(createManualOrderBodyStateMax),
+  "lineItems": zod.array(zod.object({
+  "flavor": zod.enum(['salted-caramel', 'peanut-brittle']),
+  "quantity": zod.number().int().min(1).max(createManualOrderBodyLineItemsItemQuantityMax)
+})).min(1).max(createManualOrderBodyLineItemsMax),
+  "totalNaira": zod.number().int().min(1).max(createManualOrderBodyTotalNairaMax),
+  "paymentMethod": zod.enum(['bank-transfer', 'cash', 'other']),
+  "paymentStatus": zod.enum(['pending', 'paid']),
+  "paidAt": zod.string().nullish(),
+  "deliveryDate": zod.string().nullish(),
+  "sendConfirmation": zod.boolean()
+})
+
+export const CreateManualOrderResponse = zod.object({
+  "order": zod.object({
+  "source": zod.enum(['website', 'manual']).optional(),
+  "paymentStatus": zod.enum(['pending', 'paid']).optional(),
+  "paymentMethod": zod.string().nullish(),
+  "deliveryDate": zod.string().nullish(),
+  "deliveryDateOverridden": zod.boolean().optional(),
+  "confirmationStatus": zod.string().nullish(),
+  "createdAt": zod.string().nullish(),
+  "reference": zod.string(),
+  "customerName": zod.string(),
+  "email": zod.string().nullable(),
+  "phone": zod.string(),
+  "address": zod.string(),
+  "state": zod.string(),
+  "items": zod.string(),
+  "totalNaira": zod.number().int(),
+  "paidAt": zod.string().nullable(),
+  "deliveredAt": zod.coerce.date().nullable()
+}),
+  "emailStatus": zod.enum(['not-requested', 'sent', 'already-sent', 'in-progress', 'failed']),
+  "emailError": zod.string().nullable()
+})
+
+
+/**
+ * @summary Record received payment and optionally send confirmation
+ */
+export const MarkManualOrderPaidParams = zod.object({
+  "reference": zod.coerce.string()
+})
+
+export const MarkManualOrderPaidBody = zod.object({
+  "paidAt": zod.string(),
+  "deliveryDate": zod.string().nullish(),
+  "sendConfirmation": zod.boolean()
+})
+
+export const MarkManualOrderPaidResponse = zod.object({
+  "order": zod.object({
+  "source": zod.enum(['website', 'manual']).optional(),
+  "paymentStatus": zod.enum(['pending', 'paid']).optional(),
+  "paymentMethod": zod.string().nullish(),
+  "deliveryDate": zod.string().nullish(),
+  "deliveryDateOverridden": zod.boolean().optional(),
+  "confirmationStatus": zod.string().nullish(),
+  "createdAt": zod.string().nullish(),
+  "reference": zod.string(),
+  "customerName": zod.string(),
+  "email": zod.string().nullable(),
+  "phone": zod.string(),
+  "address": zod.string(),
+  "state": zod.string(),
+  "items": zod.string(),
+  "totalNaira": zod.number().int(),
+  "paidAt": zod.string().nullable(),
+  "deliveredAt": zod.coerce.date().nullable()
+}),
+  "emailStatus": zod.enum(['not-requested', 'sent', 'already-sent', 'in-progress', 'failed']),
+  "emailError": zod.string().nullable()
+})
+
+
+/**
+ * @summary Send or retry confirmation for a paid manual order
+ */
+export const SendManualOrderConfirmationParams = zod.object({
+  "reference": zod.coerce.string()
+})
+
+export const SendManualOrderConfirmationResponse = zod.object({
+  "order": zod.object({
+  "source": zod.enum(['website', 'manual']).optional(),
+  "paymentStatus": zod.enum(['pending', 'paid']).optional(),
+  "paymentMethod": zod.string().nullish(),
+  "deliveryDate": zod.string().nullish(),
+  "deliveryDateOverridden": zod.boolean().optional(),
+  "confirmationStatus": zod.string().nullish(),
+  "createdAt": zod.string().nullish(),
+  "reference": zod.string(),
+  "customerName": zod.string(),
+  "email": zod.string().nullable(),
+  "phone": zod.string(),
+  "address": zod.string(),
+  "state": zod.string(),
+  "items": zod.string(),
+  "totalNaira": zod.number().int(),
+  "paidAt": zod.string().nullable(),
+  "deliveredAt": zod.coerce.date().nullable()
+}),
+  "emailStatus": zod.enum(['not-requested', 'sent', 'already-sent', 'in-progress', 'failed']),
+  "emailError": zod.string().nullable()
 })
 
 

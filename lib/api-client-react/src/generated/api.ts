@@ -31,6 +31,9 @@ import type {
   ApiError,
   HealthStatus,
   ListAdminOrdersParams,
+  ManualOrderInput,
+  ManualOrderResult,
+  ManualPaymentInput,
   PaystackCheckoutInput,
   PaystackCheckoutSession,
   PaystackPaymentConfirmation
@@ -461,6 +464,257 @@ export function useListAdminOrders<TData = Awaited<ReturnType<typeof listAdminOr
 
 
 
+
+export const getCreateManualOrderUrl = () => {
+
+
+
+
+  return `/api/admin/manual-orders`
+}
+
+/**
+ * @summary Record an outside order without charging the customer
+ */
+export const createManualOrder = async (manualOrderInput: ManualOrderInput, options?: Parameters<typeof customFetch>[1]): Promise<ManualOrderResult> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+return customFetch<ManualOrderResult>(getCreateManualOrderUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(manualOrderInput)
+  }
+);}
+
+
+
+
+
+export const getCreateManualOrderMutationKey = () => ['createManualOrder'] as const;
+
+export const getCreateManualOrderMutationOptions = <TError = ErrorType<ApiError>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createManualOrder>>, TError,CreateManualOrderMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof createManualOrder>>, TError,CreateManualOrderMutationVariables, TContext> => {
+
+const mutationKey = getCreateManualOrderMutationKey();
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof createManualOrder>>, CreateManualOrderMutationVariables> = (props) => {
+          const {data} = props ?? {};
+
+          return  createManualOrder(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type CreateManualOrderMutationResult = NonNullable<Awaited<ReturnType<typeof createManualOrder>>>
+    export type CreateManualOrderMutationBody = BodyType<ManualOrderInput>
+    export type CreateManualOrderMutationError = ErrorType<ApiError>
+    export type CreateManualOrderMutationVariables = {data: BodyType<ManualOrderInput>}
+
+    /**
+ * @summary Record an outside order without charging the customer
+ */
+export const useCreateManualOrder = <TError = ErrorType<ApiError>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createManualOrder>>, TError,CreateManualOrderMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof createManualOrder>>,
+        TError,
+        CreateManualOrderMutationVariables,
+        TContext
+      > => {
+      return useMutation(getCreateManualOrderMutationOptions(options), queryClient);
+    }
+
+export const getMarkManualOrderPaidUrl = (reference: string,) => {
+
+
+
+
+  return `/api/admin/manual-orders/${reference}/payment`
+}
+
+/**
+ * @summary Record received payment and optionally send confirmation
+ */
+export const markManualOrderPaid = async (reference: string,
+    manualPaymentInput: ManualPaymentInput, options?: Parameters<typeof customFetch>[1]): Promise<ManualOrderResult> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+return customFetch<ManualOrderResult>(getMarkManualOrderPaidUrl(reference),
+  {
+    ...options,
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(manualPaymentInput)
+  }
+);}
+
+
+
+
+
+export const getMarkManualOrderPaidMutationKey = () => ['markManualOrderPaid'] as const;
+
+export const getMarkManualOrderPaidMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof markManualOrderPaid>>, TError,MarkManualOrderPaidMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof markManualOrderPaid>>, TError,MarkManualOrderPaidMutationVariables, TContext> => {
+
+const mutationKey = getMarkManualOrderPaidMutationKey();
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof markManualOrderPaid>>, MarkManualOrderPaidMutationVariables> = (props) => {
+          const {reference,data} = props ?? {};
+
+          return  markManualOrderPaid(reference,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type MarkManualOrderPaidMutationResult = NonNullable<Awaited<ReturnType<typeof markManualOrderPaid>>>
+    export type MarkManualOrderPaidMutationBody = BodyType<ManualPaymentInput>
+    export type MarkManualOrderPaidMutationError = ErrorType<unknown>
+    export type MarkManualOrderPaidMutationVariables = {reference: string;data: BodyType<ManualPaymentInput>}
+
+    /**
+ * @summary Record received payment and optionally send confirmation
+ */
+export const useMarkManualOrderPaid = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof markManualOrderPaid>>, TError,MarkManualOrderPaidMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof markManualOrderPaid>>,
+        TError,
+        MarkManualOrderPaidMutationVariables,
+        TContext
+      > => {
+      return useMutation(getMarkManualOrderPaidMutationOptions(options), queryClient);
+    }
+
+export const getSendManualOrderConfirmationUrl = (reference: string,) => {
+
+
+
+
+  return `/api/admin/manual-orders/${reference}/confirmation`
+}
+
+/**
+ * @summary Send or retry confirmation for a paid manual order
+ */
+export const sendManualOrderConfirmation = async (reference: string, options?: Parameters<typeof customFetch>[1]): Promise<ManualOrderResult> => {
+
+  return customFetch<ManualOrderResult>(getSendManualOrderConfirmationUrl(reference),
+  {
+    ...options,
+    method: 'POST'
+
+
+  }
+);}
+
+
+
+
+
+export const getSendManualOrderConfirmationMutationKey = () => ['sendManualOrderConfirmation'] as const;
+
+export const getSendManualOrderConfirmationMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof sendManualOrderConfirmation>>, TError,SendManualOrderConfirmationMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof sendManualOrderConfirmation>>, TError,SendManualOrderConfirmationMutationVariables, TContext> => {
+
+const mutationKey = getSendManualOrderConfirmationMutationKey();
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof sendManualOrderConfirmation>>, SendManualOrderConfirmationMutationVariables> = (props) => {
+          const {reference} = props ?? {};
+
+          return  sendManualOrderConfirmation(reference,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type SendManualOrderConfirmationMutationResult = NonNullable<Awaited<ReturnType<typeof sendManualOrderConfirmation>>>
+
+    export type SendManualOrderConfirmationMutationError = ErrorType<unknown>
+    export type SendManualOrderConfirmationMutationVariables = {reference: string}
+
+    /**
+ * @summary Send or retry confirmation for a paid manual order
+ */
+export const useSendManualOrderConfirmation = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof sendManualOrderConfirmation>>, TError,SendManualOrderConfirmationMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof sendManualOrderConfirmation>>,
+        TError,
+        SendManualOrderConfirmationMutationVariables,
+        TContext
+      > => {
+      return useMutation(getSendManualOrderConfirmationMutationOptions(options), queryClient);
+    }
 
 export const getUpdateAdminOrderDeliveryUrl = (reference: string,) => {
 

@@ -75,7 +75,34 @@ export interface PaystackPaymentConfirmation {
   totalNaira: number;
 }
 
+export type AdminOrderSource = typeof AdminOrderSource[keyof typeof AdminOrderSource];
+
+
+export const AdminOrderSource = {
+  website: 'website',
+  manual: 'manual',
+} as const;
+
+export type AdminOrderPaymentStatus = typeof AdminOrderPaymentStatus[keyof typeof AdminOrderPaymentStatus];
+
+
+export const AdminOrderPaymentStatus = {
+  pending: 'pending',
+  paid: 'paid',
+} as const;
+
 export interface AdminOrder {
+  source?: AdminOrderSource;
+  paymentStatus?: AdminOrderPaymentStatus;
+  /** @nullable */
+  paymentMethod?: string | null;
+  /** @nullable */
+  deliveryDate?: string | null;
+  deliveryDateOverridden?: boolean;
+  /** @nullable */
+  confirmationStatus?: string | null;
+  /** @nullable */
+  createdAt?: string | null;
   reference: string;
   customerName: string;
   /** @nullable */
@@ -89,6 +116,108 @@ export interface AdminOrder {
   paidAt: string | null;
   /** @nullable */
   deliveredAt: string | null;
+}
+
+export type ManualLineItemFlavor = typeof ManualLineItemFlavor[keyof typeof ManualLineItemFlavor];
+
+
+export const ManualLineItemFlavor = {
+  'salted-caramel': 'salted-caramel',
+  'peanut-brittle': 'peanut-brittle',
+} as const;
+
+export interface ManualLineItem {
+  flavor: ManualLineItemFlavor;
+  /**
+     * @minimum 1
+     * @maximum 10000
+     */
+  quantity: number;
+}
+
+export type ManualOrderInputPaymentMethod = typeof ManualOrderInputPaymentMethod[keyof typeof ManualOrderInputPaymentMethod];
+
+
+export const ManualOrderInputPaymentMethod = {
+  'bank-transfer': 'bank-transfer',
+  cash: 'cash',
+  other: 'other',
+} as const;
+
+export type ManualOrderInputPaymentStatus = typeof ManualOrderInputPaymentStatus[keyof typeof ManualOrderInputPaymentStatus];
+
+
+export const ManualOrderInputPaymentStatus = {
+  pending: 'pending',
+  paid: 'paid',
+} as const;
+
+export interface ManualOrderInput {
+  requestId: string;
+  /**
+     * @minLength 2
+     * @maxLength 120
+     */
+  customerName: string;
+  /** @maxLength 254 */
+  email: string;
+  /**
+     * @minLength 7
+     * @maxLength 30
+     */
+  phone: string;
+  /**
+     * @minLength 5
+     * @maxLength 1000
+     */
+  address: string;
+  /**
+     * @minLength 2
+     * @maxLength 100
+     */
+  state: string;
+  /**
+     * @minItems 1
+     * @maxItems 2
+     */
+  lineItems: ManualLineItem[];
+  /**
+     * @minimum 1
+     * @maximum 100000000
+     */
+  totalNaira: number;
+  paymentMethod: ManualOrderInputPaymentMethod;
+  paymentStatus: ManualOrderInputPaymentStatus;
+  /** @nullable */
+  paidAt?: string | null;
+  /** @nullable */
+  deliveryDate?: string | null;
+  sendConfirmation: boolean;
+}
+
+export interface ManualPaymentInput {
+  paidAt: string;
+  /** @nullable */
+  deliveryDate?: string | null;
+  sendConfirmation: boolean;
+}
+
+export type ManualOrderResultEmailStatus = typeof ManualOrderResultEmailStatus[keyof typeof ManualOrderResultEmailStatus];
+
+
+export const ManualOrderResultEmailStatus = {
+  'not-requested': 'not-requested',
+  sent: 'sent',
+  'already-sent': 'already-sent',
+  'in-progress': 'in-progress',
+  failed: 'failed',
+} as const;
+
+export interface ManualOrderResult {
+  order: AdminOrder;
+  emailStatus: ManualOrderResultEmailStatus;
+  /** @nullable */
+  emailError: string | null;
 }
 
 export interface AdminDeliveryUpdate {
@@ -105,13 +234,23 @@ export interface AdminOrderPage {
   orders: AdminOrder[];
   page: number;
   hasMore: boolean;
+  deliveryTrackingAvailable: boolean;
 }
 
 export type ListAdminOrdersParams = {
+source?: ListAdminOrdersSource;
 /**
  * @minimum 1
  * @maximum 10000
  */
 page?: number;
 };
+
+export type ListAdminOrdersSource = typeof ListAdminOrdersSource[keyof typeof ListAdminOrdersSource];
+
+
+export const ListAdminOrdersSource = {
+  website: 'website',
+  manual: 'manual',
+} as const;
 

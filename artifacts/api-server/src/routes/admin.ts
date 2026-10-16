@@ -1,6 +1,6 @@
 import { Router, type IRouter, type Request, type Response } from 'express';
 import { clerkClient, getAuth } from '@clerk/express';
-import { db, adminOrderDeliveryTable } from '@workspace/db';
+import { db, adminOrderDeliveryTable, manualOrderTable } from '@workspace/db';
 import { eq, inArray } from 'drizzle-orm';
 import {
   ListAdminOrdersQueryParams,
@@ -16,7 +16,10 @@ import {
   type PaystackTransaction,
   verifyPaystackTransaction,
 } from '../lib/paystack';
+import { loadAdminOrderDeliveryStatuses } from '../lib/adminOrderDeliveryStatus';
 import { verifiedOrderMetadata } from './paystack';
+import { listManualOrders, manualReferencePattern } from '../lib/manualOrders';
+import { getDeliverySchedule } from '@workspace/delivery-schedule';
 
 const router: IRouter = Router();
 
@@ -25,7 +28,7 @@ router.use((_req, res, next) => {
   next();
 });
 
-async function requireAdmin(req: Request, res: Response): Promise<boolean> {
+export async function requireAdmin(req: Request, res: Response): Promise<boolean> {
   const userId = getAuth(req).userId;
   if (!userId) {
     res.status(401).json({ error: 'Please sign in to view orders.' });
@@ -82,6 +85,21 @@ router.get('/orders', async (req, res): Promise<void> => {
     return;
   }
   const page = parsed.data.page ?? 1;
+  if (parsed.data.source === 'manual') {
+    try {
+      const result = await listManualOrders(page);
+      const delivery = await loadAdminOrderDeliveryStatuses(result.orders, async references =>
+        db.select().from(adminOrderDeliveryTable).where(inArray(adminOrderDeliveryTable.reference, references)));
+      res.json(ListAdminOrdersResponse.parse({
+        orders: delivery.orders, page, hasMore: result.hasMore,
+        deliveryTrackingAvailable: delivery.error ? false : delivery.deliveryTrackingAvailable,
+      }));
+    } catch (error) {
+      req.log.error({ err: error }, 'Could not load manual orders');
+      res.status(503).json({ error: 'Could not load manual orders. Please try again.' });
+    }
+    return;
+  }
 
   let result;
   try {
@@ -100,6 +118,9 @@ router.get('/orders', async (req, res): Promise<void> => {
     const order = verifiedBurstOrder(transaction);
     if (!order) return [];
     return [{
+      source: 'website' as const,
+      paymentStatus: 'paid' as const,
+      deliveryDate: transaction.paid_at ? getDeliverySchedule(transaction.paid_at).deliveryDate : null,
       reference: transaction.reference,
       customerName: order.customerName,
       email: transaction.customer?.email ?? null,
@@ -111,21 +132,18 @@ router.get('/orders', async (req, res): Promise<void> => {
       paidAt: transaction.paid_at ?? null,
     }];
   });
-  try {
-    const statuses = orders.length
-      ? await db.select().from(adminOrderDeliveryTable)
-        .where(inArray(adminOrderDeliveryTable.reference, orders.map(order => order.reference)))
-      : [];
-    const deliveredByReference = new Map(statuses.map(status => [status.reference, status.deliveredAt.toISOString()]));
-    const withDelivery = orders.map(order => ({
-      ...order,
-      deliveredAt: deliveredByReference.get(order.reference) ?? null,
-    }));
-    res.json(ListAdminOrdersResponse.parse({ orders: withDelivery, page, hasMore: result.hasMore }));
-  } catch (error) {
-    req.log.error({ err: error }, 'Could not load order delivery statuses');
-    res.status(503).json({ error: 'Could not load delivery statuses. Please try again.' });
+  const delivery = await loadAdminOrderDeliveryStatuses(orders, async references =>
+    db.select().from(adminOrderDeliveryTable)
+      .where(inArray(adminOrderDeliveryTable.reference, references)));
+  if (delivery.error) {
+    req.log.error({ err: delivery.error }, 'Could not load order delivery statuses');
   }
+  res.json(ListAdminOrdersResponse.parse({
+    orders: delivery.orders,
+    page,
+    hasMore: result.hasMore,
+    deliveryTrackingAvailable: delivery.deliveryTrackingAvailable,
+  }));
 });
 
 router.patch('/orders/:reference/delivery', async (req, res): Promise<void> => {
@@ -133,16 +151,29 @@ router.patch('/orders/:reference/delivery', async (req, res): Promise<void> => {
   const params = UpdateAdminOrderDeliveryParams.safeParse(req.params);
   const body = UpdateAdminOrderDeliveryBody.safeParse(req.body);
   const reference = params.success ? params.data.reference : '';
-  if (!body.success || !/^burst-[a-f0-9]{8}(?:-[a-f0-9]{4}){3}-[a-f0-9]{12}$/i.test(reference)) {
+  const isManual = manualReferencePattern.test(reference);
+  if (!body.success || (!isManual && !/^burst-[a-f0-9]{8}(?:-[a-f0-9]{4}){3}-[a-f0-9]{12}$/i.test(reference))) {
     res.status(400).json({ error: 'Invalid delivery update.' });
     return;
   }
 
   try {
-    const transaction = await verifyPaystackTransaction(reference);
-    if (transaction.reference !== reference || !verifiedBurstOrder(transaction)) {
-      res.status(404).json({ error: 'Confirmed Burst order not found.' });
-      return;
+    if (isManual) {
+      const [manual] = await db.select().from(manualOrderTable).where(eq(manualOrderTable.reference, reference));
+      if (!manual) {
+        res.status(404).json({ error: 'Manual order not found.' });
+        return;
+      }
+      if (manual.paymentStatus !== 'paid') {
+        res.status(409).json({ error: 'Record received payment before marking this order delivered.' });
+        return;
+      }
+    } else {
+      const transaction = await verifyPaystackTransaction(reference);
+      if (transaction.reference !== reference || !verifiedBurstOrder(transaction)) {
+        res.status(404).json({ error: 'Confirmed Burst order not found.' });
+        return;
+      }
     }
   } catch (error) {
     if (error instanceof PaystackApiError && error.statusCode === 404) {

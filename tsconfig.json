@@ -4,6 +4,9 @@
   "files": [],
   "references": [
     {
+      "path": "./lib/delivery-schedule"
+    },
+    {
       "path": "./lib/db"
     },
     {

@@ -5,8 +5,21 @@
  * API specification
  * OpenAPI spec version: 0.1.0
  */
+import type { AdminOrderPaymentStatus } from './adminOrderPaymentStatus';
+import type { AdminOrderSource } from './adminOrderSource';
 
 export interface AdminOrder {
+  source?: AdminOrderSource;
+  paymentStatus?: AdminOrderPaymentStatus;
+  /** @nullable */
+  paymentMethod?: string | null;
+  /** @nullable */
+  deliveryDate?: string | null;
+  deliveryDateOverridden?: boolean;
+  /** @nullable */
+  confirmationStatus?: string | null;
+  /** @nullable */
+  createdAt?: string | null;
   reference: string;
   customerName: string;
   /** @nullable */

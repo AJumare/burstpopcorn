@@ -114,6 +114,12 @@ paths:
       tags: [admin]
       summary: List confirmed Burst Popcorn Paystack orders for the shop admin
       parameters:
+        - name: source
+          in: query
+          schema:
+            type: string
+            enum: [website, manual]
+            default: website
         - name: page
           in: query
           schema:
@@ -152,6 +158,72 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ApiError"
+  /admin/manual-orders:
+    post:
+      operationId: createManualOrder
+      tags: [admin]
+      summary: Record an outside order without charging the customer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ManualOrderInput"
+      responses:
+        "201":
+          description: Saved order and confirmation email outcome
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ManualOrderResult"
+        "400":
+          description: Invalid manual order
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+  /admin/manual-orders/{reference}/payment:
+    patch:
+      operationId: markManualOrderPaid
+      tags: [admin]
+      summary: Record received payment and optionally send confirmation
+      parameters:
+        - name: reference
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ManualPaymentInput"
+      responses:
+        "200":
+          description: Paid order and confirmation outcome
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ManualOrderResult"
+  /admin/manual-orders/{reference}/confirmation:
+    post:
+      operationId: sendManualOrderConfirmation
+      tags: [admin]
+      summary: Send or retry confirmation for a paid manual order
+      parameters:
+        - name: reference
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Order and confirmation email outcome
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ManualOrderResult"
   /admin/orders/{reference}/delivery:
     patch:
       operationId: updateAdminOrderDelivery
@@ -292,6 +364,22 @@ components:
       type: object
       required: [reference, customerName, email, phone, address, state, items, totalNaira, paidAt, deliveredAt]
       properties:
+        source:
+          type: string
+          enum: [website, manual]
+        paymentStatus:
+          type: string
+          enum: [pending, paid]
+        paymentMethod:
+          type: ["string", "null"]
+        deliveryDate:
+          type: ["string", "null"]
+        deliveryDateOverridden:
+          type: boolean
+        confirmationStatus:
+          type: ["string", "null"]
+        createdAt:
+          type: ["string", "null"]
         reference:
           type: string
         customerName:
@@ -313,6 +401,87 @@ components:
         deliveredAt:
           type: ["string", "null"]
           format: date-time
+    ManualLineItem:
+      type: object
+      required: [flavor, quantity]
+      properties:
+        flavor:
+          type: string
+          enum: [salted-caramel, peanut-brittle]
+        quantity:
+          type: integer
+          minimum: 1
+          maximum: 10000
+    ManualOrderInput:
+      type: object
+      required: [requestId, customerName, email, phone, address, state, lineItems, totalNaira, paymentMethod, paymentStatus, sendConfirmation]
+      properties:
+        requestId:
+          type: string
+          format: uuid
+        customerName:
+          type: string
+          minLength: 2
+          maxLength: 120
+        email:
+          type: string
+          format: email
+          maxLength: 254
+        phone:
+          type: string
+          minLength: 7
+          maxLength: 30
+        address:
+          type: string
+          minLength: 5
+          maxLength: 1000
+        state:
+          type: string
+          minLength: 2
+          maxLength: 100
+        lineItems:
+          type: array
+          minItems: 1
+          maxItems: 2
+          items:
+            $ref: "#/components/schemas/ManualLineItem"
+        totalNaira:
+          type: integer
+          minimum: 1
+          maximum: 100000000
+        paymentMethod:
+          type: string
+          enum: [bank-transfer, cash, other]
+        paymentStatus:
+          type: string
+          enum: [pending, paid]
+        paidAt:
+          type: ["string", "null"]
+        deliveryDate:
+          type: ["string", "null"]
+        sendConfirmation:
+          type: boolean
+    ManualPaymentInput:
+      type: object
+      required: [paidAt, sendConfirmation]
+      properties:
+        paidAt:
+          type: string
+        deliveryDate:
+          type: ["string", "null"]
+        sendConfirmation:
+          type: boolean
+    ManualOrderResult:
+      type: object
+      required: [order, emailStatus, emailError]
+      properties:
+        order:
+          $ref: "#/components/schemas/AdminOrder"
+        emailStatus:
+          type: string
+          enum: [not-requested, sent, already-sent, in-progress, failed]
+        emailError:
+          type: ["string", "null"]
     AdminDeliveryUpdate:
       type: object
       required: [delivered]
@@ -330,7 +499,7 @@ components:
           format: date-time
     AdminOrderPage:
       type: object
-      required: [orders, page, hasMore]
+      required: [orders, page, hasMore, deliveryTrackingAvailable]
       properties:
         orders:
           type: array
@@ -339,5 +508,7 @@ components:
         page:
           type: integer
         hasMore:
+          type: boolean
+        deliveryTrackingAvailable:
           type: boolean
 

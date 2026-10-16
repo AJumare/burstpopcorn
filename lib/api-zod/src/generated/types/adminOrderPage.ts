@@ -11,4 +11,5 @@ export interface AdminOrderPage {
   orders: AdminOrder[];
   page: number;
   hasMore: boolean;
+  deliveryTrackingAvailable: boolean;
 }

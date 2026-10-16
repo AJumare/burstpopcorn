@@ -5,8 +5,10 @@
  * API specification
  * OpenAPI spec version: 0.1.0
  */
+import type { ListAdminOrdersSource } from './listAdminOrdersSource';
 
 export type ListAdminOrdersParams = {
+source?: ListAdminOrdersSource;
 /**
  * @minimum 1
  * @maximum 10000

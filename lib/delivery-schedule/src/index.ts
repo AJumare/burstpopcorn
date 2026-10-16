@@ -6,6 +6,15 @@ const dateFormatter = new Intl.DateTimeFormat('en-GB', {
   timeZone: 'UTC', weekday: 'long', day: 'numeric', month: 'long', year: 'numeric',
 });
 
+export function formatDeliveryDate(value: string): string {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) throw new Error('Delivery date must be YYYY-MM-DD');
+  const date = new Date(`${value}T00:00:00Z`);
+  if (!Number.isFinite(date.getTime()) || date.toISOString().slice(0, 10) !== value) {
+    throw new Error('Invalid delivery date');
+  }
+  return dateFormatter.format(date);
+}
+
 export function getDeliverySchedule(paymentTime: Date | string) {
   if (typeof paymentTime === 'string' && !/(Z|[+-]\d{2}:\d{2})$/i.test(paymentTime)) {
     throw new Error('Delivery scheduling requires a payment timestamp with a timezone');

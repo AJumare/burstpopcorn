@@ -243,6 +243,8 @@ router.post('/checkout', async (req, res): Promise<void> => {
     ) {
       throw new Error('Unexpected Paystack checkout URL');
     }
+    // Starting checkout is not a paid order and must not trigger an email.
+    // Customer confirmations are sent only after verified payment.
     res.json(CreatePaystackCheckoutResponse.parse({
       authorizationUrl: hostedUrl.toString(),
       reference: session.reference,

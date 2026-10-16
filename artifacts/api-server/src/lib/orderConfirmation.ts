@@ -3,49 +3,11 @@ import nodemailer from 'nodemailer';
 import { and, eq, lt, or } from 'drizzle-orm';
 import { db, orderConfirmationTable } from '@workspace/db';
 import type { PaystackOrderProof, PaystackTransaction } from './paystack';
+import { orderConfirmationMessage } from './orderConfirmationTemplate';
+
+export { orderConfirmationMessage } from './orderConfirmationTemplate';
 
 const SENDER = 'hello@burstpopcorn.com';
-
-function escapeHtml(value: string): string {
-  return value.replace(/[&<>"']/g, char => ({
-    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;',
-  })[char] ?? char);
-}
-
-export function orderConfirmationMessage(order: PaystackOrderProof) {
-  const total = new Intl.NumberFormat('en-NG', {
-    style: 'currency', currency: 'NGN', maximumFractionDigits: 0,
-  }).format(order.amountKobo / 100);
-  const text = [
-    `Hi ${order.customerName},`,
-    '',
-    'Your Burst Popcorn payment is confirmed. Thank you for your order!',
-    '',
-    `Order: ${order.reference}`,
-    `Items: ${order.items}`,
-    `Total paid: ${total} (including delivery)`,
-    `Delivery to: ${order.address}, ${order.state}`,
-    '',
-    'If you have a question about your order, reply to this email.',
-    'Burst Popcorn Co.',
-  ].join('\n');
-  const html = `<!doctype html><html><body style="margin:0;padding:32px 16px;background:#2b1f15;font-family:Arial,sans-serif;color:#2b1f15">
-    <div style="max-width:560px;margin:auto;background:#faf6ee;border-radius:16px;padding:32px">
-      <p style="color:#925b11;font-size:12px;letter-spacing:3px;font-weight:bold">BURST POPCORN CO.</p>
-      <h1 style="font-family:Georgia,serif;font-size:32px">Your order is confirmed</h1>
-      <p>Hi ${escapeHtml(order.customerName)},</p>
-      <p>Your payment is confirmed. Thank you for your order!</p>
-      <div style="border-top:1px solid #dac8ac;border-bottom:1px solid #dac8ac;padding:16px 0">
-        <p><strong>Order</strong><br>${escapeHtml(order.reference)}</p>
-        <p><strong>Items</strong><br>${escapeHtml(order.items)}</p>
-        <p><strong>Total paid</strong><br>${escapeHtml(total)} (including delivery)</p>
-        <p><strong>Delivery to</strong><br>${escapeHtml(order.address)}, ${escapeHtml(order.state)}</p>
-      </div>
-      <p>If you have a question about your order, reply to this email.</p>
-      <p style="color:#925b11">Burst Popcorn Co.</p>
-    </div></body></html>`;
-  return { text, html };
-}
 
 /** Claims a payment reference before SMTP delivery to avoid duplicate webhook/return emails. */
 export async function sendPaidOrderConfirmation(
@@ -65,12 +27,25 @@ export async function sendPaidOrderConfirmation(
     || (metadata as Record<string, unknown>).confirmation_email !== 'v1') {
     return 'not-enrolled';
   }
+  return sendOrderConfirmation(order, transaction.customer?.email ?? '', transaction.paid_at ?? '');
+}
+
+/** Shared transport and reference-based dedupe; callers must establish payment first. */
+export async function sendOrderConfirmation(
+  order: PaystackOrderProof,
+  email: string,
+  paidAt: Date | string,
+  deliveryDate?: string,
+): Promise<'sent' | 'already-sent' | 'in-progress'> {
   const password = process.env.BURST_EMAIL_APP_PASSWORD;
   if (!password) throw new Error('BURST_EMAIL_APP_PASSWORD is not configured');
-  const recipient = transaction.customer?.email?.trim();
+  const recipient = email.trim();
   if (!recipient || recipient.length > 254 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(recipient)) {
     throw new Error('Verified payment has no usable customer email');
   }
+  // Derive from the actual payment time, never the webhook/retry/send time.
+  // Missing payment timestamps fail explicitly instead of promising a wrong date.
+  const message = orderConfirmationMessage(order, paidAt, deliveryDate);
 
   const now = new Date();
   const attemptId = randomUUID();
@@ -115,7 +90,7 @@ export async function sendPaidOrderConfirmation(
       from: { name: 'Burst Popcorn Co.', address: SENDER },
       to: recipient,
       subject: 'Your Burst Popcorn order is confirmed',
-      ...orderConfirmationMessage(order),
+      ...message,
     });
     if (!result.accepted.some(address => address.toLowerCase() === recipient.toLowerCase())) {
       throw new Error('SMTP did not accept recipient');
