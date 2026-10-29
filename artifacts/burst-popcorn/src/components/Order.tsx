@@ -291,7 +291,7 @@ export default function Order() {
             {/* Name */}
             <div className="flex flex-col gap-1.5">
               <label className="font-sans tracking-widest text-xs text-brand-cream/50 uppercase">Full Name</label>
-              <input type="text" value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))}
+              <input type="text" value={form.name} onChange={e => { setForm(f => ({ ...f, name: e.target.value })); setErrors(prev => ({ ...prev, name: '' })); }}
                 placeholder="Your name"
                 className="bg-transparent border border-brand-mid/50 text-brand-cream font-sans text-sm px-3 py-2.5 placeholder:text-brand-cream/20 focus:outline-none focus:border-brand-gold transition-colors" />
               {errors.name && <span className="font-sans text-xs text-red-400">{errors.name}</span>}
@@ -309,7 +309,7 @@ export default function Order() {
             {/* Phone */}
             <div className="flex flex-col gap-1.5">
               <label className="font-sans tracking-widest text-xs text-brand-cream/50 uppercase">Phone Number</label>
-              <input type="tel" value={form.phone} onChange={e => setForm(f => ({ ...f, phone: e.target.value }))}
+              <input type="tel" value={form.phone} onChange={e => { setForm(f => ({ ...f, phone: e.target.value })); setErrors(prev => ({ ...prev, phone: '' })); }}
                 placeholder="+234 800 000 0000"
                 className="bg-transparent border border-brand-mid/50 text-brand-cream font-sans text-sm px-3 py-2.5 placeholder:text-brand-cream/20 focus:outline-none focus:border-brand-gold transition-colors" />
               {errors.phone && <span className="font-sans text-xs text-red-400">{errors.phone}</span>}
@@ -337,7 +337,7 @@ export default function Order() {
             {/* Address */}
             <div className="flex flex-col gap-1.5">
               <label className="font-sans tracking-widest text-xs text-brand-cream/50 uppercase">Delivery Address</label>
-              <textarea value={form.address} onChange={e => setForm(f => ({ ...f, address: e.target.value }))}
+              <textarea value={form.address} onChange={e => { setForm(f => ({ ...f, address: e.target.value })); setErrors(prev => ({ ...prev, address: '' })); }}
                 placeholder="Street address, area, landmark…" rows={2}
                 className="bg-transparent border border-brand-mid/50 text-brand-cream font-sans text-sm px-3 py-2.5 placeholder:text-brand-cream/20 focus:outline-none focus:border-brand-gold transition-colors resize-none" />
               {errors.address && <span className="font-sans text-xs text-red-400">{errors.address}</span>}
