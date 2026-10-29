@@ -25,7 +25,7 @@ const MAX_PACKS = 20;
 const UNCONFIRMED_PAYMENT_MESSAGE = 'Payment has not been confirmed yet. If you were charged, wait a moment and check again.';
 const PRODUCTS = {
   'salted-caramel': { label: 'Salted Caramel', priceNaira: 7500, available: true },
-  'peanut-brittle': { label: 'Peanut Brittle', priceNaira: 7800, available: true },
+  'peanut-brittle': { label: 'Peanut Brittle', priceNaira: 8500, available: true },
   'caramel-cheese': { label: 'Caramel & Cheese Mix', priceNaira: 5800, available: false },
 } as const;
 

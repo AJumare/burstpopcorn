@@ -6,7 +6,7 @@ import { ChevronDown } from 'lucide-react';
 const FLAVORS = [
   { value: 'salted-caramel', label: 'Salted Caramel', available: true, price: 7500 },
   { value: 'caramel-cheese', label: 'Caramel & Cheese Mix', available: false, price: 5800 },
-  { value: 'peanut-brittle', label: 'Peanut Brittle', available: true, price: 7800 },
+  { value: 'peanut-brittle', label: 'Peanut Brittle', available: true, price: 8500 },
 ];
 const DELIVERY_FEE = 3500;
 
